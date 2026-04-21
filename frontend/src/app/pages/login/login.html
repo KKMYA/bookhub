@@ -1,0 +1,26 @@
+<div class="flex flex-col items-center justify-center gap-8">
+    <h1 class="font-bold text-2xl mt-4">Connexion</h1>
+
+    <form class="flex flex-col items-center justify-center gap-4 w-full">
+
+        <div class="flex flex-col justify-center">
+            <label for="email">Email</label>
+            <app-input id="email" type="email" autocomplete="email" placeholder="Adresse email"></app-input>
+
+        </div>
+
+
+        <div class="flex flex-col justify-center">
+            <label for="password">Mot de passe</label>
+            <app-input-password id="password" autocomplete="current-password" placeholder="Mot de passe"></app-input-password>
+
+        </div>
+
+        <app-button type="submit">
+
+            Se connecter
+
+        </app-button>
+
+    </form>
+</div>
