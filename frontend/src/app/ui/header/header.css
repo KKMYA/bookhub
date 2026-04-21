@@ -1,0 +1,46 @@
+lucide-icon {
+	transition: transform 0.2s ease-in-out;
+}
+
+lucide-icon.menu-rotate {
+	transform: rotate(90deg);
+}
+
+.mobile-menu-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 30;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.mobile-menu-backdrop {
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.75);
+	opacity: 0;
+	transition: opacity 0.25s ease;
+}
+
+.mobile-menu-panel {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 20;
+	width: 75%;
+	height: 100%;
+	transform: translateX(-100%);
+	transition: transform 0.3s ease;
+}
+
+.mobile-menu-overlay.is-open {
+	pointer-events: auto;
+}
+
+.mobile-menu-overlay.is-open .mobile-menu-backdrop {
+	opacity: 1;
+}
+
+.mobile-menu-overlay.is-open .mobile-menu-panel {
+	transform: translateX(0);
+}
