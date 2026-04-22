@@ -17,10 +17,11 @@
         </div>
 
 
-        <div class="pb-8">
+        <div class="pb-8 flex flex-col items-center justify-center gap-8">
             @if (loggedIn) {
             <app-link href="/profile" (click)="closeMenu()">Mon compte</app-link>
             } @else {
+            <app-link href="/register" (click)="closeMenu()">S'inscrire</app-link>
             <app-link href="/login" (click)="closeMenu()">Se connecter</app-link>
             }
         </div>
@@ -51,10 +52,11 @@
             }
         </div>
 
-        <div>
+        <div class="flex items-center justify-center gap-8">
             @if (loggedIn) {
             <app-link href="/profile">Mon compte</app-link>
             } @else {
+            <app-link href="/register">S'inscrire</app-link>
             <app-link href="/login">Se connecter</app-link>
             }
         </div>
