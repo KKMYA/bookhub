@@ -2,6 +2,7 @@ package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.controller.dto.response.BookDto;
+import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,9 +40,12 @@ public class BookController {
             @ApiResponse(responseCode = "204", description = "No content"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<Iterable<BookDto>> getAll() {
-        List<BookDto> allBooks = bookService.getBooks();
-        if (allBooks.isEmpty()) {
+    public ResponseEntity<PaginatedFilesDto<BookDto>> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        PaginatedFilesDto<BookDto> allBooks = bookService.getBooks(page, size);
+        if (allBooks.data().isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         System.out.println(allBooks);

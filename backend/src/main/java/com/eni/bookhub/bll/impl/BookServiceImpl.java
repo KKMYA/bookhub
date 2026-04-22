@@ -4,17 +4,19 @@ import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.response.BookDto;
+import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import com.eni.bookhub.exception.EntityAlreadyExistsException;
 import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +29,14 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public List<BookDto> getBooks() {
-        return bookRepository.findAll()
-                .stream()
+    public PaginatedFilesDto<BookDto> getBooks(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+
+        List<BookDto> BookDtos = bookPage.getContent().stream()
                 .map(bookMapper::bookEntityToBookDto)
                 .toList();
+        return new PaginatedFilesDto<>(BookDtos, bookPage.getTotalElements());
     }
 
     @Override
