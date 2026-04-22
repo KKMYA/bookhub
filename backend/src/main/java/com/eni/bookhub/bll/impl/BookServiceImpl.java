@@ -1,5 +1,6 @@
 package com.eni.bookhub.bll.impl;
 
+import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.response.BookDto;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class BookServiceImpl {
+public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
@@ -31,6 +32,13 @@ public class BookServiceImpl {
                 .stream()
                 .map(bookMapper::bookEntityToBookDto)
                 .toList();
+    }
+
+    @Override
+    public BookDto findBookById(int id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
+        return bookMapper.bookEntityToBookDto(book);
     }
 
     /**
@@ -53,7 +61,10 @@ public class BookServiceImpl {
      * @return BookDto : object for front
      */
     public BookDto createBook(BookDto bookDto) {
-        if (bookRepository.existsByByIsbn(bookDto.isbn())) {
+        //Aller voir si la categorie existe
+        //book.setCategory(cat);
+        // Gerer la creation de la categorie si elle n existe pas
+        if (bookRepository.existsByIsbn(bookDto.isbn())) {
             throw new EntityAlreadyExistsException("Book with ISBN " + bookDto.isbn() + " already exist.");
         }
         try {
@@ -65,16 +76,6 @@ public class BookServiceImpl {
 
         }
     }
-
-    /**
-     *
-     */
-    public BookDto findBookById(Integer id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
-        return bookMapper.bookEntityToBookDto(book);
-    }
-
 
 //    public BookDto updateBook(BookDto bookDto) throws BookhubException {
 //        Book Book;

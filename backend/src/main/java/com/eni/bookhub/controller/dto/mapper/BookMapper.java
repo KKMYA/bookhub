@@ -5,12 +5,12 @@ import com.eni.bookhub.controller.dto.response.BookDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface BookMapper {
 
-    @Mapping(source = "category.libelle", target = "categoryLibelle")
+    @Mapping(source = "categoryLibelle", target = "category.libelle")
     Book bookDtoToBookEntity(BookDto bookDto);
 
-    @Mapping(target = "category", ignore = true)
-    BookDto bookEntityToBookDto(Book fileEntity);
+    @Mapping(target ="category.libelle", ignore = true)
+    BookDto bookEntityToBookDto(Book book);
 }
