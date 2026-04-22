@@ -16,12 +16,14 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    private String secretKey = "MaCleSuperSecreteDePlusDe32Caracteres!!!";
+    private long jwtExpiration = 86400000;
 
-    @Value("${application.security.jwt.secret-key:JusteParceQueIlFautAuMoins32CaracteresPourLaSecurite!}")
-    private String secretKey;
+//    @Value("${application.security.jwt.secret-key:JusteParceQueIlFautAuMoins32CaracteresPourLaSecurite!}")
+//    private String secretKey;
 
-    @Value("${application.security.jwt.expiration:86400000}") // 24h in ms
-    private long jwtExpiration;
+//    @Value("${application.security.jwt.expiration:86400000}") // 24h in ms
+//    private long jwtExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

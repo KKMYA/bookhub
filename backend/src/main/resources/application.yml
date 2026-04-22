@@ -14,8 +14,8 @@ spring:
       enabled: true
       path: /bookhub/api
 
-  server:
-    port: 9000
+server:
+  port: 9000
 
 
 
