@@ -5,10 +5,10 @@
     <div class="mobile-menu-panel bg-gray-300 p-4 flex flex-col items-center justify-between"
         (click)="$event.stopPropagation()">
         <div class="flex flex-col items-center justify-center gap-8">
-            <div class="flex flex-col items-center justify-center group gap-4">
+            <a href="/" class="flex flex-col items-center justify-center group gap-4">
                 <img src="icon.webp" alt="Icône" />
-                <span class="group-hover:underline" (click)="closeMenu()">Les livres</span>
-            </div>
+                <span class="group-hover:underline font-bold text-2xl" (click)="closeMenu()">Les livres</span>
+            </a>
 
             @if (loggedIn) {
             <app-link href="/reservations" (click)="closeMenu()">Mes réservations</app-link>
@@ -32,37 +32,18 @@
     <div class="flex flex-row items-center justify-between lg:hidden w-full">
         <button class="block lg:hidden" type="button" [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()">
             <lucide-icon [img]="MenuIcon" [class.menu-rotate]="menuOpen()"></lucide-icon>
-            <!-- <span [class.rotate-90]="menuOpen()" class="transition-transform duration-300 transform"></span> -->
         </button>
 
         <img src="icon.webp" alt="Icône" />
     </div>
 
-    <!-- 
-    @if (menuOpen) {
-    <div class="flex flex-col items-center justify-center gap-4 lg:hidden w-full">
-        <a href="/" class="flex flex-row items-center justify-center group">
-            <img src="icon.webp" alt="Icône" />
-            <app-link href="/" class="group-hover:underline">Les livres</app-link>
-        </a>
-        @if (loggedIn) {
-        <app-link href="/reservations">Mes réservations</app-link>
-        }
-        @if (loggedIn) {
-        <app-link href="/profile">Mon compte</app-link>
-        } @else {
-        <app-link href="/login">Se connecter</app-link>
-        }
-    </div>
-    } -->
-
     <div class="hidden items-center justify-between lg:flex flex-row w-full">
         <div class="flex items-center justify-center gap-8">
-            <div class="flex flex-row items-center justify-center group">
+            <a href="/" class="flex flex-row items-center justify-center group gap-4">
                 <img src="icon.webp" alt="Icône" />
 
-                <app-link href="/" class="group-hover:underline">Les livres</app-link>
-            </div>
+                <span class="group-hover:underline font-bold text-2xl">Les livres</span>
+            </a>
 
 
             @if (loggedIn) {
