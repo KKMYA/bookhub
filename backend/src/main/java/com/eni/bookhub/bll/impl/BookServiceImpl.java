@@ -3,6 +3,7 @@ package com.eni.bookhub.bll.impl;
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
+import com.eni.bookhub.controller.dto.response.BookHomeDto;
 import com.eni.bookhub.controller.dto.response.BookDto;
 import com.eni.bookhub.exception.BookhubException;
 import com.eni.bookhub.exception.EntityAlreadyExistsException;
@@ -27,10 +28,10 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public List<BookDto> getBooks() {
+    public List<BookHomeDto> getBooks() {
         return bookRepository.findAll()
                 .stream()
-                .map(bookMapper::bookEntityToBookDto)
+                .map(bookMapper::bookEntityToBookHomeDto)
                 .toList();
     }
 

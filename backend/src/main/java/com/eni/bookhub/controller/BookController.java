@@ -1,6 +1,7 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
+import com.eni.bookhub.controller.dto.response.BookHomeDto;
 import com.eni.bookhub.controller.dto.response.BookDto;
 import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,12 +40,11 @@ public class BookController {
             @ApiResponse(responseCode = "204", description = "No content"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<Iterable<BookDto>> getAll() {
-        List<BookDto> allBooks = bookService.getBooks();
+    public ResponseEntity<Iterable<BookHomeDto>> getAll() {
+        List<BookHomeDto> allBooks = bookService.getBooks();
         if (allBooks.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        System.out.println(allBooks);
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
