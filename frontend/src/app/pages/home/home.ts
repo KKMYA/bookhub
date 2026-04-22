@@ -2,17 +2,18 @@ import { Component } from '@angular/core';
 import { Book } from '../../models/book.model';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
+import { Modal } from "../../ui/components/modal/modal";
 
 @Component({
     selector: 'app-home',
     imports: [
         Button,
-        LucideAngularModule
+        LucideAngularModule,
     ],
     templateUrl: './home.html'
 })
 
-export class Home { 
+export class Home {
     readonly Star = Star;
 
     loggedIn: boolean = false;
