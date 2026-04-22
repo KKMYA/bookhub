@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Book } from "../../../models/book.model";
 import { Observable } from "rxjs";
 import { BookConstants } from "../../../constants/bookConstants";
+import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
 
 
 @Injectable({
@@ -13,9 +14,10 @@ export class BookService {
 
   constructor(private http : HttpClient){}
 
-  public getBooks(): Observable<Book[]>{
-    return this.http.get<Book[]>(BookConstants.getBooksApiEndpoint);
-  }
+async fetchBooks(page: number = 0, size: number = 9) {
+  const response = await fetch(`${BookConstants.getBooksApiEndpoint}?page=${page}&size=${size}`);
+  return await response.json() as PaginatedFilesDto<Book>;
+}
 
   public getBookById(bookId : number): Observable<Book> {
     return this.http.get<Book>(`${BookConstants.getBooksApiEndpoint}/${bookId}`);
