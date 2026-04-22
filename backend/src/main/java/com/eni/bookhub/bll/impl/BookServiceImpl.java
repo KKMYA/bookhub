@@ -3,6 +3,7 @@ package com.eni.bookhub.bll.impl;
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
+import com.eni.bookhub.controller.dto.response.BookHomeDto;
 import com.eni.bookhub.controller.dto.response.BookDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
@@ -29,12 +30,12 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public PaginatedFilesDto<BookDto> getBooks(int page, int size) {
+    public PaginatedFilesDto<BookHomeDto> getBooks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
         List<BookDto> BookDtos = bookPage.getContent().stream()
-                .map(bookMapper::bookEntityToBookDto)
+                .map(bookMapper::bookEntityToBookHomeDto)
                 .toList();
         return new PaginatedFilesDto<>(BookDtos, bookPage.getTotalElements());
     }

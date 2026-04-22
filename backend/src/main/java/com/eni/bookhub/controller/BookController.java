@@ -1,6 +1,7 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
+import com.eni.bookhub.controller.dto.response.BookHomeDto;
 import com.eni.bookhub.controller.dto.response.BookDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
@@ -40,15 +41,14 @@ public class BookController {
             @ApiResponse(responseCode = "204", description = "No content"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<PaginatedFilesDto<BookDto>> getAllBooks(
+    public ResponseEntity<PaginatedFilesDto<BookHomeDto>> getAllBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        PaginatedFilesDto<BookDto> allBooks = bookService.getBooks(page, size);
+        PaginatedFilesDto<BookHomeDto> allBooks = bookService.getBooks(page, size);
         if (allBooks.data().isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        System.out.println(allBooks);
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
