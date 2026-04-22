@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
 
@@ -27,11 +27,12 @@ public class BookController {
      * @return - An Iterable object of Book full filled
      */
     @GetMapping()
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(
             tags = "Bookhub",
             summary = "Tous les livres",
-            description = "Récupération de tous les livres",
-            security = @SecurityRequirement(name = "bearer_key")
+            description = "Récupération de tous les livres"
+//            security = @SecurityRequirement(name = "bearer_key")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get a list of book"),
@@ -43,6 +44,7 @@ public class BookController {
         if (allBooks.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
+        System.out.println(allBooks);
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
