@@ -1,0 +1,33 @@
+# --- IDEs ---
+.idea/
+*.iml
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# --- System ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Backend (Java/Maven) ---
+target/
+/out/
+*.jar
+*.war
+/db_data/
+
+# --- Frontend (Node/JS) ---
+node_modules/
+/dist/
+/tmp/
+.angular/
+.cache/
+npm-debug.log*
+
+# --- Secret & Local Config ---
+backend/src/main/resources/application-dev.yml
+.env
+.env.local
