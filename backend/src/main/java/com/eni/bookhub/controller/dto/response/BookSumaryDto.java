@@ -1,8 +1,6 @@
 package com.eni.bookhub.controller.dto.response;
 
-public record BookHomeDto(
-
-        Integer idBook,
+public record BookSumaryDto(
 
         String titre,
 
@@ -10,8 +8,7 @@ public record BookHomeDto(
 
         Double noteMoyenne,
 
-        String couvertureUrl,
+        String couvertureUrl
 
-        Boolean available
 ) {
 }
