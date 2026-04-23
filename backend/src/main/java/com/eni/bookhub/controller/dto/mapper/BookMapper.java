@@ -2,8 +2,8 @@ package com.eni.bookhub.controller.dto.mapper;
 
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.response.BookDto;
-import com.eni.bookhub.controller.dto.response.BookSumaryDto;
-import com.eni.bookhub.controller.dto.response.BookDetailDto;
+import com.eni.bookhub.controller.dto.request.BookSumaryDto;
+import com.eni.bookhub.controller.dto.request.BookDetailDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

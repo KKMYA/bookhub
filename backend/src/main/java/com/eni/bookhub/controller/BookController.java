@@ -1,8 +1,8 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
-import com.eni.bookhub.controller.dto.response.BookSumaryDto;
-import com.eni.bookhub.controller.dto.response.BookDetailDto;
+import com.eni.bookhub.controller.dto.request.BookSumaryDto;
+import com.eni.bookhub.controller.dto.request.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
