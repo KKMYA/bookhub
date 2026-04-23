@@ -48,6 +48,7 @@ public class BookController {
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
+
     /**
      * Suppression d'un livre
      *
@@ -96,8 +97,6 @@ public class BookController {
 //        result = bookService.createBook(bookDto);
 //        return new ResponseEntity<>(result, HttpStatus.OK);
 //    }
-
-
     /**
      * Find one Book by ID
      *
