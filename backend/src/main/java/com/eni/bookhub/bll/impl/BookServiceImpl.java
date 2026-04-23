@@ -4,9 +4,10 @@ import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
-import com.eni.bookhub.controller.dto.response.BookDto;
-import com.eni.bookhub.controller.dto.request.BookSumaryDto;
-import com.eni.bookhub.controller.dto.request.BookDetailDto;
+import com.eni.bookhub.controller.dto.request.BookDto;
+import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookSumaryDto;
+import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import com.eni.bookhub.exception.EntityAlreadyExistsException;
@@ -36,8 +37,7 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public PaginatedFilesDto<BookSumaryDto> getBooks(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable) {
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
         List<BookSumaryDto> BookListDtos = bookPage.getContent().stream()
@@ -54,28 +54,14 @@ public class BookServiceImpl implements BookService {
     }
 
     /**
-     * @param id
-     * @throws BookhubException
-     */
-    public void deleteBook(Integer id) throws BookhubException {
-        try {
-            if (!bookRepository.existsById(id)) {
-                throw new BookhubException("Book with " + id + " not found");
-            }
-            bookRepository.deleteById(id);
-        } catch (NoSuchElementException e) {
-            throw new RuntimeException("Error when remove the book ", e);
-        }
-    }
-
-    /**
      * @param bookDto
      * @return BookDto : object for front
      */
+    @Override
     @Transactional
     public BookDto createBook(BookDto bookDto) {
         String categoryName = bookDto.categoryLibelle();
-        Category category = categoryRepository.findByName(categoryName)
+        Category category = categoryRepository.findByLibelle(categoryName)
                 .orElseGet(() -> {
                     Category newCategory = new Category();
                     newCategory.setLibelle(categoryName);
@@ -94,47 +80,51 @@ public class BookServiceImpl implements BookService {
 
         }
     }
+    @Override
+    @Transactional
+    public BookDto updateBook(BookDto bookDto) throws BookhubException {
+        Book bookEntity;
+        Book existingBook = bookRepository.findByIsbn(bookDto.isbn())
+                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN " + bookDto.isbn() + " n'existe pas."));
+        try {
+            Book bookToUpdate = bookMapper.bookDtoToBookEntity(bookDto);
+            bookToUpdate.setIdBook(existingBook.getIdBook());
+            bookEntity = bookRepository.save(bookToUpdate);
+            return bookMapper.bookEntityToBookDto(bookEntity);
+        } catch (NoSuchElementException e) {
+            System.out.println("Recovery error : " + e.getMessage());
+            throw new BookhubException("Can't update this book");
+        }
 
-//    public BookDto updateBook(BookDto bookDto) throws BookhubException {
-//        Book Book;
-//        try {
-//            Book = bookRepository.save(BookMapper.map(bookDto));
-//        } catch (NoSuchElementException e) {
-//            System.out.println("Recovery error : " + e.getMessage());
-//            throw new BookhubException("Can't update this book");
-//        }
-//        return BookMapper.map(bookEntity);
-//    }
-    /*************Pour la recherche ***************************************/
+    }
+
+    @Override
+    public void deleteBook(int id) {
+        try {
+            if (!bookRepository.existsById(id)) {
+                throw new BookhubException("Book with " + id + " not found");
+            }
+            bookRepository.deleteById(id);
+        } catch (NoSuchElementException e) {
+            throw new RuntimeException("Error when remove the book ", e);
+        }
+    }
 
     /**
-     * Methode findBookByTitle
-     *
-     * @return one object  for front
-//     */
-//    public BookDetailDto findBookByTitle(String title) {
-//        BookDetailDto bookDetailDto = null;
-//        BookListDto bookEntity = bookRepository.findByTitre(title);
-//        bookDetailDto = BookMapper.map(bookEntity);
-//        return bookDetailDto;
-//    }
-
-    /**
-     * findBookByIsbn
-     *
-     * @return one object identify by isbn
+     * Pour la recherche
      */
-//    public BookDto findBookByIsbn(Integer isbn) {
-//        BookDto bookDto = null;
-//        BookEntity bookEntity = bookRepository.findByIsbn(isbn);
-//        bookDto = BookMapper.map(bookEntity);
-//        return bookDto;
-//
-//    }
-//
-//    public List<BookDto> findBooksOrderByDateDesc() {
-//        List<BookEntity> bookEntity = bookRepository.findOrderByAddDateDesc();
-//        return BookMapper.mapEntities(bookEntity);
-//
-//    }
+    public PaginatedFilesDto<BookSumaryDto> searchBooks(BookSearchDto searchDto, Pageable pageable) {
+
+        Page<Book> bookPage = bookRepository.searchBooks(
+                searchDto.searchTerm(),
+                searchDto.categoryLibelle(),
+                searchDto.isAvailable(),
+                pageable
+        );
+        List<BookSumaryDto> dtos = bookPage.getContent().stream()
+                .map(bookMapper::bookEntityToBookSumaryDto)
+                .toList();
+        return new PaginatedFilesDto<>(dtos, bookPage.getTotalElements());
+    }
+
 }
