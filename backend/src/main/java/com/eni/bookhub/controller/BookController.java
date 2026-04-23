@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,6 @@ public class BookController {
             tags = "Bookhub",
             summary = "Tous les livres",
             description = "Récupération de tous les livres"
-//            security = @SecurityRequirement(name = "bearer_key")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get a list of book"),
@@ -39,10 +40,9 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<PaginatedFilesDto<BookSumaryDto>> getAllBooks(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
-    ) {
-        PaginatedFilesDto<BookSumaryDto> allBooks = bookService.getBooks(page, size);
+            @PageableDefault(page = 0, size = 9) Pageable pageable) {
+
+        PaginatedFilesDto<BookSumaryDto> allBooks = bookService.getBooks(pageable);
         if (allBooks.data().isEmpty()) {
             return ResponseEntity.noContent().build();
         }

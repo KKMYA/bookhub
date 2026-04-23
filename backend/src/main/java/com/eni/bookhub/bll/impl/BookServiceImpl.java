@@ -37,8 +37,7 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public PaginatedFilesDto<BookSumaryDto> getBooks(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable) {
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
         List<BookSumaryDto> BookListDtos = bookPage.getContent().stream()
