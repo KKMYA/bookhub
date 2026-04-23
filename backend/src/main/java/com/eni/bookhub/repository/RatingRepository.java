@@ -1,11 +1,10 @@
 package com.eni.bookhub.repository;
 
 import com.eni.bookhub.bo.Rating;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.util.List;
-
 /**
  * Repository JPA pour l'entité Rating.
  *
@@ -30,7 +29,7 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
      * @param idBook ID du livre
      * @return liste des avis validés
      */
-    List<Rating> findByBookIdBookAndModerationTrue(Long idBook);
+    Page<Rating> findByBookIdBookAndModerationTrue(Long idBook, Pageable pageable);
 
     /**
      * Récupère les avis NON VALIDÉS (moderation = false).
@@ -39,7 +38,7 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
      *
      * @return liste des avis en attente de validation
      */
-    List<Rating> findByModerationFalse();
+    Page<Rating> findByModerationFalse(Pageable pageable);
 
     /**
      * Calcule la moyenne des notes VALIDÉES pour un livre donné.

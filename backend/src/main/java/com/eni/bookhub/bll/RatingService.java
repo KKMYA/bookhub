@@ -1,8 +1,10 @@
 package com.eni.bookhub.bll;
 
+import com.eni.bookhub.controller.dto.request.CreateRatingRequestDTO;
+import com.eni.bookhub.controller.dto.request.UpdateRatingRequestDTO;
 import com.eni.bookhub.controller.dto.response.RatingDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service JPA pour l'entité Rating.
@@ -15,10 +17,13 @@ import java.util.List;
 public interface RatingService {
 
     // Crée un avis avec moderation=false
-    RatingDto createRating(Long idBook, Integer note, String commentaire);
+    RatingDto createRating(Long idBook, CreateRatingRequestDTO request);
 
     // Passe un avis a moderation = true
     RatingDto validateRating(Long idRating);
+
+    // Modifie un avis, en récupérant la nouvelle note et le nouveau commentaire
+    RatingDto updateRating(Long idRating, UpdateRatingRequestDTO request);
 
     // Supprime un avis
     void deleteRating(Long idRating);
@@ -27,10 +32,10 @@ public interface RatingService {
     RatingDto getRatingById(Long idRating);
 
     // Retourne les avis avec moderation = true (validés)
-    List<RatingDto> getValidatedRatingsByBook(Long idBook);
+    Page<RatingDto> getValidatedRatingsByBook(Long idBook, Pageable pageable);
 
     // Retourne les avis avec moderation = false (non validés)
-    List<RatingDto> getPendingRatings();
+    Page<RatingDto> getPendingRatings(Pageable pageable);
 
     // Retourne la moyenne des notes validées d'un livre selon son ID
     Double getAverageRatingByBook(Long idBook);

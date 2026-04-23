@@ -1,11 +1,13 @@
 package com.eni.bookhub.bo;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Rating")
@@ -17,16 +19,18 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_notation")
-    private Integer idNotation;
+    private Long idRating;
 
     @Column(name = "note", nullable = false)
+    @Min(1)
+    @Max(5)
     private Integer note;
 
     @Column(name = "commentaire", length = 1000)
     private String commentaire;
 
     @Column(name = "date_publication", nullable = false)
-    private Date datePublication;
+    private LocalDateTime datePublication;
 
     @Column(name = "moderation", nullable = false)
     private Boolean moderation;

@@ -26,7 +26,7 @@ public class RatingMapper {
         }
 
         RatingDto dto = new RatingDto();
-        dto.setIdRating(rating.getIdNotation());
+        dto.setIdRating(rating.getIdRating());
         dto.setNote(rating.getNote());
         dto.setCommentaire(rating.getCommentaire());
         dto.setDatePublication(rating.getDatePublication());
@@ -34,7 +34,7 @@ public class RatingMapper {
 
 
         if (rating.getBook() != null) {
-            dto.setIdBook(rating.getBook().getIdBook());
+            dto.setIdBook(Long.valueOf(rating.getBook().getIdBook()));
         }
         // A implanter quand user prêt
        // if (rating.getUser() != null) {

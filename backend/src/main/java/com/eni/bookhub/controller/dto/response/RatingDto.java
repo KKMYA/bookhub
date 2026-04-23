@@ -1,8 +1,9 @@
 package com.eni.bookhub.controller.dto.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * DTO de réponse pour les avis.
@@ -11,14 +12,15 @@ import java.util.Date;
  * transporter vers le front uniquement les données utiles
  * d'un avis, sans exposer directement l'entité JPA Rating.
  */
-@Data
+@Getter
+@Setter
 public class RatingDto {
 
-    private Integer idRating;
+    private Long idRating;
     private Integer note;
     private String commentaire;
-    private Date datePublication;
+    private LocalDateTime datePublication;
     private Boolean moderation;
-    private Integer idBook;
+    private Long idBook;
     private Long idUser;
 }
