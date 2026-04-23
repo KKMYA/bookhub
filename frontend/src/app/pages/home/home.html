@@ -1,30 +1,62 @@
-<div class="flex flex-row flex-wrap items-center justify-center gap-8 p-8">
-    @for (book of (books$ | async) ; track book.idBook) {
-    <a href="/book/{{ book.idBook }}"
-        class="flex flex-col items-center justify-center bg-gray-300 p-4 rounded-xl w-104 gap-4">
+<div class="p-8">
+    @if (isLoading) {
+    <p class="text-center text-gray-600">Chargement des livres...</p>
+    } @else if (books.length === 0) {
+    <p class="text-center text-gray-600">Aucun livre disponible.</p>
+    } @else {
+    <div class="flex flex-row flex-wrap items-center justify-center gap-8">
+        @for (book of books ; track book.idBook) {
+        <a href="/book/{{ book.idBook }}"
+            class="flex flex-col items-center justify-center bg-gray-300 p-4 rounded-xl w-104 gap-4">
 
-        <div class="flex flex-row items-center justify-between w-full">
-            <div>
-                <h1 class="text-2xl font-bold">{{ book.titre }}</h1>
-                <p class="text-gray-600">{{ book.auteur }}</p>
+            <div class="flex flex-row items-center justify-between w-full">
+                <div>
+                    <h1 class="text-2xl font-bold">{{ book.titre }}</h1>
+                    <p class="text-gray-600">{{ book.auteur }}</p>
+                </div>
+
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <p>{{ book.noteMoyenne }}</p>
+
+                    <lucide-angular [img]="Star" class="text-yellow-400 fill-yellow-400"></lucide-angular>
+                </div>
             </div>
 
-            <div class="flex flex-row items-center justify-center gap-2">
-                <p>{{ book.noteMoyenne }}</p>
+            <img [src]="book.couvertureUrl" alt="{{ book.titre }}" class="w-64 h-auto" />
 
-                <lucide-angular [img]="Star" class="text-yellow-400 fill-yellow-400"></lucide-angular>
-            </div>
-        </div>
-
-        <img [src]="book.couvertureUrl" alt="{{ book.titre }}" class="w-64 h-auto" />
-
-        <app-button class="w-full" [disabled]="!loggedIn || !book.available">
-            @if (book.available) {
+            <app-button class="w-full" [disabled]="!loggedIn || !book.available">
+                @if (book.available) {
                 Réserver
-            } @else {
+                } @else {
                 Indisponible
-            }
-        </app-button>
-    </a>
+                }
+            </app-button>
+        </a>
+        }
+    </div>
+
+    <div class="mt-8 flex items-center justify-center gap-4">
+        <button
+            type="button"
+            (click)="goToPreviousPage()"
+            [disabled]="currentPage === 0 || isLoading"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+            Précédent
+        </button>
+
+        <p class="text-sm text-gray-700">
+            Page {{ totalPages === 0 ? 0 : currentPage + 1 }} / {{ totalPages }}
+        </p>
+
+        <button
+            type="button"
+            (click)="goToNextPage()"
+            [disabled]="isLoading || currentPage + 1 >= totalPages"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+            Suivant
+        </button>
+    </div>
     }
 </div>

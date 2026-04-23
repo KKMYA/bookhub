@@ -1,8 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Book, BookHome } from "../../../models/book.model";
-import { catchError, Observable, throwError } from "rxjs";
+import { Observable } from "rxjs";
 import { BookConstants } from "../../../constants/bookConstants";
 import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
 
@@ -14,14 +13,12 @@ import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
 export class BookService {
 
     constructor(
-        private http: HttpClient,
-        private router: Router
+        private http: HttpClient
     ) { }
 
-async fetchBooks(page: number = 0, size: number = 9) {
-  const response = await fetch(`${BookConstants.getBooksApiEndpoint}?page=${page}&size=${size}`);
-  return await response.json() as PaginatedFilesDto<BookHome>;
-}
+    fetchBooks(page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookHome>> {
+        return this.http.get<PaginatedFilesDto<BookHome>>(`${BookConstants.getBooksApiEndpoint}?page=${page}&size=${size}`);
+    }
 
     public getBookById(bookId: number): Observable<Book> {
         return this.http.get<Book>(`${BookConstants.getBooksApiEndpoint}/${bookId}`)
