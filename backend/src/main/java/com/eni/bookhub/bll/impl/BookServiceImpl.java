@@ -4,9 +4,9 @@ import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
-import com.eni.bookhub.controller.dto.response.BookDto;
-import com.eni.bookhub.controller.dto.request.BookSumaryDto;
-import com.eni.bookhub.controller.dto.request.BookDetailDto;
+import com.eni.bookhub.controller.dto.request.BookDto;
+import com.eni.bookhub.controller.dto.response.BookSumaryDto;
+import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import com.eni.bookhub.exception.EntityAlreadyExistsException;
@@ -54,28 +54,14 @@ public class BookServiceImpl implements BookService {
     }
 
     /**
-     * @param id
-     * @throws BookhubException
-     */
-    public void deleteBook(Integer id) throws BookhubException {
-        try {
-            if (!bookRepository.existsById(id)) {
-                throw new BookhubException("Book with " + id + " not found");
-            }
-            bookRepository.deleteById(id);
-        } catch (NoSuchElementException e) {
-            throw new RuntimeException("Error when remove the book ", e);
-        }
-    }
-
-    /**
      * @param bookDto
      * @return BookDto : object for front
      */
+    @Override
     @Transactional
     public BookDto createBook(BookDto bookDto) {
         String categoryName = bookDto.categoryLibelle();
-        Category category = categoryRepository.findByName(categoryName)
+        Category category = categoryRepository.findByLibelle(categoryName)
                 .orElseGet(() -> {
                     Category newCategory = new Category();
                     newCategory.setLibelle(categoryName);
@@ -94,24 +80,37 @@ public class BookServiceImpl implements BookService {
 
         }
     }
+    @Override
+    public BookDto updateBook(BookDto bookDto) throws BookhubException {
+        Book bookEntity;
+        try {
+            bookEntity = bookRepository.save(bookMapper.bookDtoToBookEntity(bookDto));
+        } catch (NoSuchElementException e) {
+            System.out.println("Recovery error : " + e.getMessage());
+            throw new BookhubException("Can't update this book");
+        }
+        return bookMapper.bookEntityToBookDto(bookEntity);
+    }
 
-//    public BookDto updateBook(BookDto bookDto) throws BookhubException {
-//        Book Book;
-//        try {
-//            Book = bookRepository.save(BookMapper.map(bookDto));
-//        } catch (NoSuchElementException e) {
-//            System.out.println("Recovery error : " + e.getMessage());
-//            throw new BookhubException("Can't update this book");
-//        }
-//        return BookMapper.map(bookEntity);
-//    }
+    @Override
+    public void deleteBook(int id) {
+        try {
+            if (!bookRepository.existsById(id)) {
+                throw new BookhubException("Book with " + id + " not found");
+            }
+            bookRepository.deleteById(id);
+        } catch (NoSuchElementException e) {
+            throw new RuntimeException("Error when remove the book ", e);
+        }
+    }
+
     /*************Pour la recherche ***************************************/
 
     /**
      * Methode findBookByTitle
      *
      * @return one object  for front
-//     */
+     */
 //    public BookDetailDto findBookByTitle(String title) {
 //        BookDetailDto bookDetailDto = null;
 //        BookListDto bookEntity = bookRepository.findByTitre(title);
@@ -132,9 +131,15 @@ public class BookServiceImpl implements BookService {
 //
 //    }
 //
+     // Faire categorie
+    // faire disponibilité
+    //Faire un tri multiple
+
+
 //    public List<BookDto> findBooksOrderByDateDesc() {
 //        List<BookEntity> bookEntity = bookRepository.findOrderByAddDateDesc();
 //        return BookMapper.mapEntities(bookEntity);
 //
 //    }
+
 }
