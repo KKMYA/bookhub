@@ -2,43 +2,55 @@ package com.eni.bookhub.bll.impl;
 
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.bo.Book;
+import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.response.BookDto;
+import com.eni.bookhub.controller.dto.request.BookSumaryDto;
+import com.eni.bookhub.controller.dto.request.BookDetailDto;
+import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import com.eni.bookhub.exception.EntityAlreadyExistsException;
 import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.BookRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.eni.bookhub.repository.CategoryRepository;
 
-import java.util.ArrayList;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
     private final BookMapper bookMapper;
 
     /**
      * get bookDto object
      * use mapper class
      */
-    public List<BookDto> getBooks() {
-        return bookRepository.findAll()
-                .stream()
-                .map(bookMapper::bookEntityToBookDto)
+    public PaginatedFilesDto<BookSumaryDto> getBooks(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+
+        List<BookSumaryDto> BookListDtos = bookPage.getContent().stream()
+                .map(bookMapper::bookEntityToBookSumaryDto)
                 .toList();
+        return new PaginatedFilesDto<>(BookListDtos, bookPage.getTotalElements());
     }
 
     @Override
-    public BookDto findBookById(int id) {
+    public BookDetailDto findBookById(int id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
-        return bookMapper.bookEntityToBookDto(book);
+        return bookMapper.bookEntityToBookDetailDto(book);
     }
 
     /**
@@ -60,15 +72,21 @@ public class BookServiceImpl implements BookService {
      * @param bookDto
      * @return BookDto : object for front
      */
+    @Transactional
     public BookDto createBook(BookDto bookDto) {
-        //Aller voir si la categorie existe
-        //book.setCategory(cat);
-        // Gerer la creation de la categorie si elle n existe pas
+        String categoryName = bookDto.categoryLibelle();
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setLibelle(categoryName);
+                    return categoryRepository.save(newCategory);
+                });
         if (bookRepository.existsByIsbn(bookDto.isbn())) {
             throw new EntityAlreadyExistsException("Book with ISBN " + bookDto.isbn() + " already exist.");
         }
         try {
             Book book = bookMapper.bookDtoToBookEntity(bookDto);
+            book.setCategory(category);
             Book savedBook = bookRepository.save(book);
             return bookMapper.bookEntityToBookDto(savedBook);
         } catch (Exception e) {
@@ -89,16 +107,16 @@ public class BookServiceImpl implements BookService {
 //    }
     /*************Pour la recherche ***************************************/
 
-//    /**
-//     * Methode findBookByTitle
-//     *
-//     * @return one object  for front
+    /**
+     * Methode findBookByTitle
+     *
+     * @return one object  for front
 //     */
-//    public BookDto findBookByTitle(String title) {
-//        BookDto bookDto = null;
-//        BookEntity bookEntity = bookRepository.findByTitle(title);
-//        bookDto = BookMapper.map(bookEntity);
-//        return bookDto;
+//    public BookDetailDto findBookByTitle(String title) {
+//        BookDetailDto bookDetailDto = null;
+//        BookListDto bookEntity = bookRepository.findByTitre(title);
+//        bookDetailDto = BookMapper.map(bookEntity);
+//        return bookDetailDto;
 //    }
 
     /**

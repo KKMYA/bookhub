@@ -1,13 +1,12 @@
 package com.eni.bookhub.bll;
 
-import com.eni.bookhub.bo.Book;
-import com.eni.bookhub.controller.dto.response.BookDto;
-
-import java.util.List;
+import com.eni.bookhub.controller.dto.request.BookSumaryDto;
+import com.eni.bookhub.controller.dto.request.BookDetailDto;
+import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 
 public interface BookService {
 
-    List<BookDto> getBooks();
+    PaginatedFilesDto<BookSumaryDto> getBooks(int page, int size);
 
-    BookDto findBookById(int id);
+    BookDetailDto findBookById(int id);
 }

@@ -1,21 +1,20 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
-import com.eni.bookhub.controller.dto.response.BookDto;
+import com.eni.bookhub.controller.dto.request.BookSumaryDto;
+import com.eni.bookhub.controller.dto.request.BookDetailDto;
+import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
 
@@ -27,20 +26,24 @@ public class BookController {
      * @return - An Iterable object of Book full filled
      */
     @GetMapping()
+    @CrossOrigin(origins = "http://localhost:4200")
     @Operation(
             tags = "Bookhub",
             summary = "Tous les livres",
-            description = "Récupération de tous les livres",
-            security = @SecurityRequirement(name = "bearer_key")
+            description = "Récupération de tous les livres"
+//            security = @SecurityRequirement(name = "bearer_key")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get a list of book"),
             @ApiResponse(responseCode = "204", description = "No content"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<Iterable<BookDto>> getAll() {
-        List<BookDto> allBooks = bookService.getBooks();
-        if (allBooks.isEmpty()) {
+    public ResponseEntity<PaginatedFilesDto<BookSumaryDto>> getAllBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        PaginatedFilesDto<BookSumaryDto> allBooks = bookService.getBooks(page, size);
+        if (allBooks.data().isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
@@ -109,8 +112,8 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getById(@PathVariable Integer id) {
-        BookDto bookDto;
+    public ResponseEntity<BookDetailDto> getById(@PathVariable Integer id) {
+        BookDetailDto bookDto;
         try {
             bookDto = bookService.findBookById(id);
         } catch (BookhubException e) {

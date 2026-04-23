@@ -1,8 +1,16 @@
-export interface Book {
-    id: number
-    title: string;
-    author: string;
-    rating: number;
-    imageUrl?: string;
-    available: boolean
+export interface BookHome {
+    idBook: number;
+    titre: string;
+    auteur: string;
+    noteMoyenne: number;
+    couvertureUrl?: string;
+    available: boolean;
+}
+
+export interface Book extends BookHome {
+    isbn: string;
+    description: string;
+    categorieLibelle?: string;
+    nbExemplaires: number;
+    nbExemplairesDisponibles: number;
 }
