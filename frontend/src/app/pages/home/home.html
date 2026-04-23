@@ -6,7 +6,7 @@
     } @else {
     <div class="flex flex-row flex-wrap items-center justify-center gap-8">
         @for (book of books ; track book.idBook) {
-        <a href="/book/{{ book.idBook }}"
+        <a [routerLink]="['/book', book.idBook]"
             class="flex flex-col items-center justify-center bg-gray-300 p-4 rounded-xl w-104 gap-4">
 
             <div class="flex flex-row items-center justify-between w-full">
