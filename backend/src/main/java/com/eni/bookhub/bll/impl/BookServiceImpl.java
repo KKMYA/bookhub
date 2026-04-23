@@ -5,6 +5,7 @@ import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.request.BookDto;
+import com.eni.bookhub.controller.dto.request.BookSearchDto;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -81,15 +82,21 @@ public class BookServiceImpl implements BookService {
         }
     }
     @Override
+    @Transactional
     public BookDto updateBook(BookDto bookDto) throws BookhubException {
         Book bookEntity;
+        Book existingBook = bookRepository.findByIsbn(bookDto.isbn())
+                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN " + bookDto.isbn() + " n'existe pas."));
         try {
-            bookEntity = bookRepository.save(bookMapper.bookDtoToBookEntity(bookDto));
+            Book bookToUpdate = bookMapper.bookDtoToBookEntity(bookDto);
+            bookToUpdate.setIdBook(existingBook.getIdBook());
+            bookEntity = bookRepository.save(bookToUpdate);
+            return bookMapper.bookEntityToBookDto(bookEntity);
         } catch (NoSuchElementException e) {
             System.out.println("Recovery error : " + e.getMessage());
             throw new BookhubException("Can't update this book");
         }
-        return bookMapper.bookEntityToBookDto(bookEntity);
+
     }
 
     @Override
@@ -104,42 +111,21 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    /*************Pour la recherche ***************************************/
-
     /**
-     * Methode findBookByTitle
-     *
-     * @return one object  for front
+     * Pour la recherche
      */
-//    public BookDetailDto findBookByTitle(String title) {
-//        BookDetailDto bookDetailDto = null;
-//        BookListDto bookEntity = bookRepository.findByTitre(title);
-//        bookDetailDto = BookMapper.map(bookEntity);
-//        return bookDetailDto;
-//    }
+    public PaginatedFilesDto<BookSumaryDto> searchBooks(BookSearchDto searchDto, Pageable pageable) {
 
-    /**
-     * findBookByIsbn
-     *
-     * @return one object identify by isbn
-     */
-//    public BookDto findBookByIsbn(Integer isbn) {
-//        BookDto bookDto = null;
-//        BookEntity bookEntity = bookRepository.findByIsbn(isbn);
-//        bookDto = BookMapper.map(bookEntity);
-//        return bookDto;
-//
-//    }
-//
-     // Faire categorie
-    // faire disponibilité
-    //Faire un tri multiple
-
-
-//    public List<BookDto> findBooksOrderByDateDesc() {
-//        List<BookEntity> bookEntity = bookRepository.findOrderByAddDateDesc();
-//        return BookMapper.mapEntities(bookEntity);
-//
-//    }
+        Page<Book> bookPage = bookRepository.searchBooks(
+                searchDto.searchTerm(),
+                searchDto.categoryLibelle(),
+                searchDto.isAvailable(),
+                pageable
+        );
+        List<BookSumaryDto> dtos = bookPage.getContent().stream()
+                .map(bookMapper::bookEntityToBookSumaryDto)
+                .toList();
+        return new PaginatedFilesDto<>(dtos, bookPage.getTotalElements());
+    }
 
 }
