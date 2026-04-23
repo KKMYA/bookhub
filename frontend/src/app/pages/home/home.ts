@@ -3,6 +3,7 @@ import { BookHome } from '../../models/book.model';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../service/http/book/bookService';
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-home',
@@ -10,6 +11,7 @@ import { BookService } from '../../service/http/book/bookService';
     imports: [
         Button,
         LucideAngularModule,
+        RouterModule,
     ],
     templateUrl: './home.html'
 })
