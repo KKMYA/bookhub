@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     private final BookService bookService;
-
     /**
      * Read - Get all books
      *
