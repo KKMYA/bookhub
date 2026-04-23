@@ -34,10 +34,10 @@ public class BookServiceImpl implements BookService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
-        List<BookDto> BookDtos = bookPage.getContent().stream()
+        List<BookHomeDto> BookHomeDtos = bookPage.getContent().stream()
                 .map(bookMapper::bookEntityToBookHomeDto)
                 .toList();
-        return new PaginatedFilesDto<>(BookDtos, bookPage.getTotalElements());
+        return new PaginatedFilesDto<>(BookHomeDtos, bookPage.getTotalElements());
     }
 
     @Override
