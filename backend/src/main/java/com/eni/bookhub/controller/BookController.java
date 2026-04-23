@@ -99,7 +99,6 @@ public class BookController {
 //    }
     /**
      * Find one Book by ID
-     *
      * @return bookDto
      */
     @Operation(summary = "Récupérer un livre par son ID",
