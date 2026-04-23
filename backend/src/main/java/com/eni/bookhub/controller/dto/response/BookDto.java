@@ -1,32 +1,21 @@
 package com.eni.bookhub.controller.dto.response;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
-
 public record BookDto(
+    String titre,
 
-        Integer idBook,
+    String auteur,
 
-        String titre,
+    String isbn,
 
-        String auteur,
+    Double noteMoyenne,
 
-        String isbn,
+    String description,
 
-        Double noteMoyenne,
+    String couvertureUrl,
 
-        String description,
+    Integer nbExemplaires,
 
-        String couvertureUrl,
+    Integer nbExemplairesDisponibles,
 
-        Integer nbExemplaires,
-
-        Integer nbExemplairesDisponibles,
-
-        // le libellé pour la catégorie
-        String categoryLibelle
-) {
-}
+    String categoryLibelle
+) {}

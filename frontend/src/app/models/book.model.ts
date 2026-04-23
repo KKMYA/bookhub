@@ -1,13 +1,16 @@
-export interface Book {
+export interface BookHome {
     idBook: number;
     titre: string;
     auteur: string;
-    isbn: string;
     noteMoyenne: number;
+    couvertureUrl?: string;
+    available: boolean;
+}
+
+export interface Book extends BookHome {
+    isbn: string;
     description: string;
     categorieLibelle?: string;
-    couvertureUrl?: string;
-    available: boolean
     nbExemplaires: number;
     nbExemplairesDisponibles: number;
 }
