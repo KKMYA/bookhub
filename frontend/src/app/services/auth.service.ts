@@ -9,7 +9,7 @@ import { RegisterRequest } from '../dto/register-request';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'http://localhost:9000/api/auth';
 
   constructor(private http: HttpClient) { }
 
