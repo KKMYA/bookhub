@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { BookHome } from '../../models/book.model';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
-import { BookService } from '../../service/http/book/bookService';
+import { BookService } from '../../services/http/book/book.service';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -17,12 +17,15 @@ import { RouterModule } from '@angular/router';
 })
 
 export class Home implements OnInit {
+    private bookService = inject(BookService);
+    private cdr = inject(ChangeDetectorRef);
+
     readonly Star = Star;
-    loggedIn: boolean = false;
     readonly pageSize: number = 9;
 
-    private bookService = inject(BookService);
+    loggedIn: boolean = false;
     books: BookHome[] = [];
+
     public total: number = 0;
     public currentPage: number = 0;
     public totalPages: number = 0;
@@ -44,6 +47,8 @@ export class Home implements OnInit {
                 this.total = response.totalElements;
                 this.currentPage = page;
                 this.totalPages = Math.ceil(this.total / this.pageSize);
+
+                this.cdr.detectChanges();
             },
             error: (error) => {
                 console.error('Erreur lors du chargement des livres :', error);
@@ -53,6 +58,8 @@ export class Home implements OnInit {
             },
             complete: () => {
                 this.isLoading = false;
+                
+                this.cdr.detectChanges();
             }
         });
     }

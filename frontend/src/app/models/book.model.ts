@@ -10,7 +10,7 @@ export interface BookHome {
 export interface Book extends BookHome {
     isbn: string;
     description: string;
-    categorieLibelle?: string;
+    categoryLibelle?: string;
     nbExemplaires: number;
     nbExemplairesDisponibles: number;
 }

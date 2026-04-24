@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { Link } from "../components/link/link";
 import { LucideAngularModule, MenuIcon } from 'lucide-angular';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -12,12 +13,14 @@ import { LucideAngularModule, MenuIcon } from 'lucide-angular';
 
 export class Header {
     readonly MenuIcon = MenuIcon
-
     readonly menuOpen = signal(false);
+    private readonly authService = inject(AuthService);
+    readonly loggedIn = this.authService.loggedIn;
 
-    loggedIn = false;
+    constructor(
+        private cdr: ChangeDetectorRef
+    ) {}
 
-    constructor(private cdr: ChangeDetectorRef) {}
 
     toggleMenu(): void {
         this.menuOpen.update((value) => !value);
