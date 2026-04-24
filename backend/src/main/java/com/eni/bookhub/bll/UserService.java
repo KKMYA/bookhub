@@ -4,5 +4,7 @@ import com.eni.bookhub.controller.dto.response.UserDto;
 
 public interface UserService {
 
-   UserDto getUserById(int id);
+   UserDto getUserById(Long id);
+
+   UserDto getUserByEmail(String email);
 }
