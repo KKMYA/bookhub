@@ -7,7 +7,6 @@ import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface BookMapper {
@@ -43,6 +42,7 @@ public interface BookMapper {
     Book bookDetailDtoToBookEntity(BookDetailDto bookDto);
 
     @Mapping(source = "category.libelle", target = "categoryLibelle")
+    @Mapping(target = "hasActiveReservation", constant = "false")
     BookDetailDto bookEntityToBookDetailDto(Book book);
 
 

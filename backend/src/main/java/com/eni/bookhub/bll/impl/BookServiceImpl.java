@@ -15,8 +15,11 @@ import com.eni.bookhub.exception.EntityAlreadyExistsException;
 import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.CategoryRepository;
+import com.eni.bookhub.repository.ReservationRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +31,11 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
+    private static final List<String> ACTIVE_RESERVATION_STATUSES = List.of("PENDING", "AVAILABLE");
+
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private final ReservationRepository reservationRepository;
     private final BookMapper bookMapper;
 
     /**
@@ -55,10 +61,29 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDetailDto findBookById(int id) {
+        public BookDetailDto findBookById(int id, Long idAccount) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
-        return bookMapper.bookEntityToBookDetailDto(book);
+
+        BookDetailDto detailDto = bookMapper.bookEntityToBookDetailDto(book);
+
+        boolean hasActiveReservation = idAccount != null && reservationRepository.existsByBookIdBookAndAccountIdAccountAndStatutIn(
+            id,
+            idAccount,
+            ACTIVE_RESERVATION_STATUSES
+        );
+
+        return new BookDetailDto(
+            detailDto.titre(),
+            detailDto.auteur(),
+            detailDto.noteMoyenne(),
+            detailDto.description(),
+            detailDto.couvertureUrl(),
+            detailDto.nbExemplairesDisponibles(),
+            detailDto.categoryLibelle(),
+            hasActiveReservation,
+                detailDto.isbn()
+        );
     }
 
     /**
@@ -88,7 +113,6 @@ public class BookServiceImpl implements BookService {
 
         }
     }
-
     @Override
     @Transactional
     public BookDto updateBook(BookDto bookDto) throws BookhubException {
@@ -104,6 +128,7 @@ public class BookServiceImpl implements BookService {
             System.out.println("Recovery error : " + e.getMessage());
             throw new BookhubException("Can't update this book");
         }
+
     }
 
     @Override

@@ -19,11 +19,15 @@
 
           <p>{{ book.description }}</p>
 
-          <app-button class="w-full">
-            Réserver
-          </app-button>
+                <app-button class="w-full" (click)="reserveBook()" [disabled]="reserveLoading || !bookId || hasActiveReservation">
+                    @if (hasActiveReservation) {
+                    Déjà réservé
+                    } @else {
+                    Réserver
+                    }
+                </app-button>
+            </div>
         </div>
-      </div>
 
       <!-- INFOS -->
       <div class="bg-gray-300 flex flex-col w-1/4 rounded-xl p-4 gap-8 h-full">
