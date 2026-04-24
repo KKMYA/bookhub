@@ -20,6 +20,8 @@ public record BookDetailDto(
         Integer nbExemplairesDisponibles,
 
         // le libellé pour la catégorie
-        String categoryLibelle
+        String categoryLibelle,
+
+        Boolean hasActiveReservation
 ) {
 }

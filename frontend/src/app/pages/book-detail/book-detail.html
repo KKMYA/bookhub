@@ -20,8 +20,12 @@
                     {{ book.description}}
                 </p>
 
-                <app-button class="w-full">
+                <app-button class="w-full" (click)="reserveBook()" [disabled]="reserveLoading || !bookId || hasActiveReservation">
+                    @if (hasActiveReservation) {
+                    Déjà réservé
+                    } @else {
                     Réserver
+                    }
                 </app-button>
             </div>
         </div>
@@ -53,8 +57,6 @@
         <article class="flex flex-col rounded-xl bg-gray-100 p-4 gap-3">
             <div class="flex items-center justify-between">
                 <p class="font-semibold">{{ comment.author }}</p>
-
-
 
                 <div class="flex items-center gap-2">
                     <p class="text-gray-700">{{ comment.rating }}</p>

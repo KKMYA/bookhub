@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Book } from '../../models/book.model';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../services/http/book/book.service';
 import { RatingService } from '../../services/http/rating/rating.service';
+import { ReservationService } from '../../services/http/reservation/reservation.service';
 
 @Component({
     selector: 'app-book-detail',
@@ -20,6 +21,7 @@ export class BookDetail implements OnInit {
 
     private bookService = inject(BookService);
     private ratingService = inject(RatingService);
+    private reservationService = inject(ReservationService);
 
     readonly Star = Star;
     readonly commentsPerPage: number = 2;
@@ -27,6 +29,8 @@ export class BookDetail implements OnInit {
     bookId: number | null = null;
     currentCommentPage: number = 0;
     comments: BookComment[] = [];
+    reserveLoading: boolean = false;
+    hasActiveReservation: boolean = false;
 
     book$!: Observable<Book>;
     book: Book | null = null;
@@ -43,6 +47,8 @@ export class BookDetail implements OnInit {
 
         this.bookService.getBookById(id).subscribe({
             next: (response) => {
+                this.hasActiveReservation = response.hasActiveReservation ?? false;
+
                 this.book = response;
             },
             error: (error) => {
@@ -67,6 +73,36 @@ export class BookDetail implements OnInit {
         });
 
         this.currentCommentPage = 0;
+    }
+
+    reserveBook(): void {
+        if (this.bookId === null) return;
+
+        if (this.book?.hasActiveReservation) {
+            alert('Vous avez déjà une réservation active pour ce livre.');
+
+            return;
+        }
+
+        this.reserveLoading = true;
+        
+        this.reservationService.createReservation(this.bookId).subscribe({
+            next: () => {
+                alert('Réservation réussie !');
+
+                this.hasActiveReservation = true;
+            },
+            error: (error) => {
+                console.error('Erreur lors de la réservation :', error);
+
+                alert('Erreur lors de la réservation. Veuillez réessayer plus tard.');
+            },
+            complete: () => {
+                this.reserveLoading = false;
+
+                this.cdr.detectChanges();
+            }
+        });
     }
 
     get paginatedComments(): BookComment[] {

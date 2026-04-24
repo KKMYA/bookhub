@@ -1,1 +1,39 @@
-<p>reservations works!</p>
+<div class="flex flex-col gap-8 p-8  pt-4">
+    <h1 class="font-bold text-2xl">Reservations en attente</h1>
+
+    @if (reservations.length === 0) {
+    <p class="text-center text-gray-600">Aucune réservation en cours.</p>
+    }
+
+    @for (reservation of reservations; track reservation.idReservation) {
+
+    @if (!reservation.book) {
+    <p class="text-center text-gray-600">Aucun livre associé à cette réservation.</p>
+    } @else {
+
+    <div class="flex flex-row rounded-xl bg-gray-100 p-4 gap-3 w-full justify-between">
+        <div class="flex flex-row gap-2">
+            <div>
+                <img [src]="reservation.book.couvertureUrl" alt="Couverture du livre"
+                    class="w-24 h-32 object-cover rounded-md">
+            </div>
+
+            <div class="flex flex-col"> 
+                <h2 class="font-bold text-lg">{{ reservation.book.titre }}</h2>
+
+                <p class="text-gray-600">Statut : {{ parseStatus(reservation.statut) }}</p>
+                <p class="text-gray-600">Date de réservation : {{ reservation.dateReservation }}</p>
+
+                @if (reservation.rangFileAttente !== null) {
+                <p class="text-gray-600">Rang dans la file d'attente : {{ reservation.rangFileAttente }}</p>
+                }
+            </div>
+        </div>
+
+        <!-- <div class="h-full flex items-center justify-center">
+            <lucide-icon [img]="TriangleAlert" [size]="36" class="text-red-600"></lucide-icon>
+        </div> -->
+    </div>
+    }
+    }
+</div>

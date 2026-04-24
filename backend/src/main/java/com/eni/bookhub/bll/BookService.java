@@ -11,7 +11,7 @@ public interface BookService {
 
     PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable);
 
-    BookDetailDto findBookById(int id);
+    BookDetailDto findBookById(int id, Long idAccount);
 
     BookDto updateBook(BookDto bookDto);
 

@@ -1,6 +1,7 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
+import com.eni.bookhub.bo.Account;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -109,10 +111,13 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<BookDetailDto> getById(@PathVariable Integer id) {
+    public ResponseEntity<BookDetailDto> getById(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal Account account
+    ) {
         BookDetailDto bookDto;
         try {
-            bookDto = bookService.findBookById(id);
+            bookDto = bookService.findBookById(id, account != null ? account.getIdAccount() : null);
         } catch (BookhubException e) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

@@ -13,4 +13,5 @@ export interface Book extends BookHome {
     categoryLibelle?: string;
     nbExemplaires: number;
     nbExemplairesDisponibles: number;
+    hasActiveReservation?: boolean;
 }
