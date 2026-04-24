@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Book } from '../../models/book.model';
 import { Observable, of } from 'rxjs';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
+import { BookService } from '../../services/http/book/book.service';
+import { RatingService } from '../../services/http/rating/rating.service';
 
 @Component({
     selector: 'app-book-detail',
@@ -13,6 +15,12 @@ import { LucideAngularModule, Star } from 'lucide-angular';
 })
 
 export class BookDetail implements OnInit {
+    private route = inject(ActivatedRoute);
+    private cdr = inject(ChangeDetectorRef);
+
+    private bookService = inject(BookService);
+    private ratingService = inject(RatingService);
+
     readonly Star = Star;
     readonly commentsPerPage: number = 2;
 
@@ -22,8 +30,6 @@ export class BookDetail implements OnInit {
 
     book$!: Observable<Book>;
     book: Book | null = null;
-
-    constructor(private route: ActivatedRoute) { }
 
     ngOnInit(): void {
         const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -35,45 +41,30 @@ export class BookDetail implements OnInit {
 
         this.bookId = id;
 
-        const exampleBook: Book = {
-            idBook: this.bookId,
-            isbn: '9782070368228',
-            nbExemplaires: 12,
-            nbExemplairesDisponibles: 7,
-            noteMoyenne: 4.6,
-            available: true,
-            auteur: 'Antoine de Saint-Exupery',
-            titre: 'Le Petit Prince',
-            description: 'Un conte poetique et philosophique autour de la rencontre, de l amitie et du sens de la vie.',
-            categorieLibelle: 'Roman',
-            couvertureUrl: 'https://static.fnac-static.com/multimedia/PE/Images/FR/NR/a6/d8/1d/1956006/1507-1/tsp20260402074953/Le-Petit-Prince.jpg'
-        };
-
-        this.book$ = of(exampleBook);
-        this.book$.subscribe((book) => {
-            this.book = book;
+        this.bookService.getBookById(id).subscribe({
+            next: (response) => {
+                this.book = response;
+            },
+            error: (error) => {
+                console.error('Erreur lors du chargement du livre :', error);
+                this.book = null;
+            },
+            complete: () => {
+                this.cdr.detectChanges();
+            }
         });
 
-        this.comments = [
-            {
-                id: 1,
-                author: 'Camille',
-                rating: 5,
-                content: 'Une lecture courte mais marquante. Beaucoup de profondeur malgre la simplicite apparente.'
+        this.ratingService.fetchRatings(0, 2, id).subscribe({
+            next: (response) => {
+                console.log('Commentaires chargés :', response);
+
+                // this.comments = response;
             },
-            {
-                id: 2,
-                author: 'Noah',
-                rating: 4,
-                content: 'Tres beau livre, ideal a relire a differents ages. La couverture est aussi tres jolie.'
-            },
-            {
-                id: 3,
-                author: 'Lina',
-                rating: 5,
-                content: 'Je recommande completement. Le style est poetique et les themes restent tres actuels.'
+            error: (error) => {
+                console.error('Erreur lors du chargement des commentaires :', error);
+                this.comments = [];
             }
-        ];
+        });
 
         this.currentCommentPage = 0;
     }
