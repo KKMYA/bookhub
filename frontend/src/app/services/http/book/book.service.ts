@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Book, BookHome } from "../../../models/book.model";
 import { Observable } from "rxjs";
-import { BookConstants } from "../../../constants/bookConstants";
 import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
+import { Endpoints } from "../../../constants/endpoints";
 
 
 @Injectable({
@@ -17,11 +17,11 @@ export class BookService {
     ) { }
 
     fetchBooks(page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookHome>> {
-        return this.http.get<PaginatedFilesDto<BookHome>>(`${BookConstants.getBooksApiEndpoint}?page=${page}&size=${size}`);
+        return this.http.get<PaginatedFilesDto<BookHome>>(`${Endpoints.getBooksApiEndpoint}?page=${page}&size=${size}`);
     }
 
     public getBookById(bookId: number): Observable<Book> {
-        return this.http.get<Book>(`${BookConstants.getBooksApiEndpoint}/${bookId}`)
+        return this.http.get<Book>(`${Endpoints.getBooksApiEndpoint}/${bookId}`)
     }
 
     // public createBook(datas: Book){
