@@ -2,26 +2,43 @@ package com.eni.bookhub.controller.dto.request;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
 @Schema(description = "Data Transfer Object representing book object.")
 public record BookDto(
-    String titre,
+        @NotBlank(message = "Le titre est obligatoire")
+        @Size(max = 255, message = "Le titre ne peut pas dépasser 255 caractères")
+        String titre,
 
-    String auteur,
+        @NotBlank(message = "L'auteur est obligatoire")
+        @Size(max = 150, message = "Le nom de l'auteur est trop long")
+        String auteur,
 
-    String isbn,
+        @NotBlank(message = "L'ISBN est obligatoire")
+        @Pattern(regexp = "^(978|979)?\\d{10}(\\d{3})?$", message = "Format ISBN invalide (doit être ISBN-10 ou ISBN-13)")
+        String isbn,
 
-    Double noteMoyenne,
+        @Min(value = 0, message = "La note ne peut pas être inférieure à 0")
+        @Max(value = 5, message = "La note ne peut pas dépasser 5")
+        Double noteMoyenne,
 
-    String description,
+        @Size(max = 2000, message = "La description est trop longue")
+        String description,
 
-    String couvertureUrl,
+        @Pattern(regexp = "^(http|https)://.*", message = "L'URL de couverture doit être une URL valide")
+        String couvertureUrl,
 
-    Integer nbExemplaires,
+        @NotNull(message = "Le nombre d'exemplaires est obligatoire")
+        @PositiveOrZero(message = "Le nombre d'exemplaires doit être positif ou égal à zéro")
+        Integer nbExemplaires,
 
-    Integer nbExemplairesDisponibles,
+        @NotNull(message = "Le nombre d'exemplaires disponibles est obligatoire")
+        @PositiveOrZero(message = "Le nombre d'exemplaires disponibles doit être positif ou égal à zéro")
+        Integer nbExemplairesDisponibles,
 
-    String categoryLibelle
-) {}
+        @NotBlank(message = "Le libellé de la catégorie est obligatoire")
+        String categoryLibelle
+) {
+}
