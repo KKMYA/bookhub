@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -93,7 +94,7 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "Success for create book "),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<BookDto> create(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> create(@Valid @RequestBody BookDto bookDto) {
         BookDto result;
         result = bookService.createBook(bookDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -136,7 +137,7 @@ public class BookController {
             @ApiResponse(responseCode = "200", description = "Success for create book "),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public ResponseEntity<BookDto> update(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> update(@Valid @RequestBody BookDto bookDto) {
         try{
             bookService.updateBook(bookDto);
         }catch (BookhubException e){

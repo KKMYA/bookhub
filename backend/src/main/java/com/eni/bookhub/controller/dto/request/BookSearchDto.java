@@ -9,9 +9,7 @@ import lombok.Builder;
 @Schema(description = "Data Transfer Object representing the search for book.")
 public record BookSearchDto(
 
-        @NotBlank
         String searchTerm,
-
         String categoryLibelle,
         Boolean isAvailable
 ) {
