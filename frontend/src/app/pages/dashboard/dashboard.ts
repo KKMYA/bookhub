@@ -17,7 +17,7 @@ export class DashboardPivot implements OnInit {
     if (role === 'ADMIN') {
       this.router.navigate(['/admin/dashboard']);
     } else if (role === 'LIBRARIAN') {
-      this.router.navigate(['/librarian/dashboard']);
+      this.router.navigate(['/dashboard/librarian']);
     } else {
       this.router.navigate(['/home']); // Sécurité pour les USER standards
     }

@@ -18,17 +18,17 @@ export class Header {
     readonly loggedIn = this.authService.loggedIn;
 
     constructor(
-        private cdr: ChangeDetectorRef
+        // private cdr: ChangeDetectorRef
     ) {}
 
 
     toggleMenu(): void {
         this.menuOpen.update((value) => !value);
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
     }
 
     closeMenu(): void {
         this.menuOpen.set(false);
-        this.cdr.detectChanges();
+        // this.cdr.detectChanges();
     }
 }

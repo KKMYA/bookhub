@@ -32,14 +32,15 @@ export class Home implements OnInit {
     public isLoading: boolean = false;
 
     ngOnInit(): void {
+      queueMicrotask(() => {
         this.loadBooks();
+      });
     }
 
     loadBooks(page: number = this.currentPage): void {
         if (page < 0) {
             return;
         }
-
         this.isLoading = true;
         this.bookService.fetchBooks(page, this.pageSize).subscribe({
             next: (response) => {
@@ -47,7 +48,6 @@ export class Home implements OnInit {
                 this.total = response.totalElements;
                 this.currentPage = page;
                 this.totalPages = Math.ceil(this.total / this.pageSize);
-
                 this.cdr.detectChanges();
             },
             error: (error) => {
@@ -58,7 +58,6 @@ export class Home implements OnInit {
             },
             complete: () => {
                 this.isLoading = false;
-                
                 this.cdr.detectChanges();
             }
         });

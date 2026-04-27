@@ -50,7 +50,7 @@ export class BookDetail implements OnInit {
                 this.book = null;
             },
             complete: () => {
-                this.cdr.detectChanges();
+                // this.cdr.detectChanges();
             }
         });
 

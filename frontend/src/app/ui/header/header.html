@@ -45,17 +45,21 @@
                 <span class="group-hover:underline font-bold text-2xl">Les livres</span>
             </a>
 
-            @if (loggedIn()) {
-                @if (authService.role === 'ADMIN' || authService.role === 'LIBRARIAN') {
-                    <app-link href="/dashboard" (click)="closeMenu()" >
+           @if (loggedIn()) {
+                @if (authService.role=== 'LIBRARIAN') {
+                    <app-link href="/dashboard/librarian" (click)="closeMenu()" >
                         Tableau de bord
                     </app-link>
+                  }@else if (authService.role === 'ADMIN' ) {
+                    <app-link href="/dashboard/admin" (click)="closeMenu()" >
+                        Tableau de bord
+                    </app-link>
+                  }
                 } @else {
                     <app-link href="/reservations" (click)="closeMenu()">
                         Mes réservations
                     </app-link>
                 }
-            }
         </div>
 
         <div class="flex items-center gap-8">

@@ -14,17 +14,22 @@ import { Endpoints } from '../../constants/endpoints';
 export class AuthService {
     private readonly platformId = inject(PLATFORM_ID);
     private readonly isBrowser = isPlatformBrowser(this.platformId);
-    private readonly _loggedIn = signal<boolean>(false);
+    private readonly _loggedIn = signal<boolean | null>(null);
     private _role: string | null = null;
 
+
     readonly loggedIn = this._loggedIn.asReadonly();
+
+    public get isLoggedIn(): boolean {
+      return this.loggedIn() ?? this.syncLoggedInState();
+    }
 
     constructor(private http: HttpClient) {
         this.syncLoggedInState();
     }
 
     public get role(): string | null {
-      if (!this.loggedIn) return null;
+      if (!this.loggedIn()) return null;
 
       if (!this._role) {
         const token = localStorage.getItem('token') ?? '';
@@ -34,11 +39,13 @@ export class AuthService {
       return this._role;
     }
 
-    private syncLoggedInState(): void {
-        this._loggedIn.set(this.isBrowser && !!localStorage.getItem('token'));
+    private syncLoggedInState(): boolean {
+      const isLoggedIn = this.isBrowser && !!localStorage.getItem('token');
+      this._loggedIn.set(isLoggedIn);
+      return isLoggedIn;
     }
 
-    private setUser(token: string): void {
+    private setToken(token: string): void {
         if (!this.isBrowser) {
             return;
         }
@@ -63,7 +70,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${Endpoints.getAuthApiEndpoint}/login`, request).pipe(
             tap(response => {
                 // On garde le token dans le localStorage
-                this.setUser(response.token);
+              this.setToken(response.token);
             })
         );
     }
@@ -73,7 +80,7 @@ export class AuthService {
         this.syncLoggedInState();
         return this.http.post<AuthResponse>(`${Endpoints.getAuthApiEndpoint}/register`, request).pipe(
             tap(response => {
-                this.setUser(response.token);
+                this.setToken(response.token);
             })
         );
     }
@@ -81,11 +88,5 @@ export class AuthService {
     // Deconnexion
     logout() {
         this.clearToken();
-    }
-
-    // Savoir si l'utilisateur est connecté
-    isLoggedIn(): boolean {
-        this.syncLoggedInState();
-        return this.loggedIn();
     }
 }
