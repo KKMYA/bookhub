@@ -20,10 +20,6 @@ export class BookService {
         return this.http.get<PaginatedFilesDto<BookHome>>(`${Endpoints.getBooksApiEndpoint}?page=${page}&size=${size}`);
     }
 
-    //  async fetchBooksForDashboard(page: number = 0, size: number = 9): Promise<PaginatedFilesDto<BookDto>> {
-    //   const response = await firstValueFrom(this.http.get<PaginatedFilesDto<BookDto>>(`${Endpoints.getBooksForDashboardApiEndpoint}?page=${page}&size=${size}`));
-    //   return response;
-    //   }
         fetchBooksForDashboard(page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookDto>> {
         return this.http.get<PaginatedFilesDto<BookDto>>(`${Endpoints.getBooksForDashboardApiEndpoint}?page=${page}&size=${size}`);
     }
@@ -32,10 +28,10 @@ export class BookService {
         return this.http.get<Book>(`${Endpoints.getBooksApiEndpoint}/${bookId}`)
     }
 
-    // public createBook(datas: Book){
-    //     this.http.post(ApiEndpoint, datas)
-    //     .subscribe();// ds le susb traiter l erreur
-    // }
+    public createBook(book: BookDto){
+        this.http.post(Endpoints.createBooksApiEndpoint, book)
+        .subscribe();
+    }
 
     //  public updateBook(datas: Book){
     //   this.http.put(ApiEndpoint, datas)
