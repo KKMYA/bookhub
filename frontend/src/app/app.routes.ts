@@ -10,6 +10,7 @@ import { authGuard } from './guards/auth.guard';
 import { Logout } from './pages/logout/logout';
 import { Reservations } from './pages/reservations/reservations';
 import { LibrarianDashboard } from './pages/dashboard/libraire/librarianDashboard';
+import { BookFormComponent } from './ui/components/form/book/bookForm.component';
 
 export const routes: Routes = [
     { path: "", component: Home },
@@ -20,6 +21,8 @@ export const routes: Routes = [
     { path: "profile", component: Profile, canActivate: [authGuard] },
     { path: "reservations", component: Reservations, canActivate: [authGuard] },
     { path: 'dashboard/librarian', component: LibrarianDashboard, canActivate: [authGuard]  },
+    { path: 'api/books/create', component: BookFormComponent, canActivate: [authGuard] },
+
     // { path: 'dashboard/admin', component: AdminDashboard, canActivate: [authGuard] }, a decommenter quand l'adminDashboard sera implementer
     { path: "book/:id", component: BookDetail, canActivate: [authGuard] },
 

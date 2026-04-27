@@ -1,53 +1,125 @@
-<div class="form-container">
-  <h2>Ajouter un nouveau livre</h2>
+<div class="min-h-screen bg-slate-50 p-4 md:p-8">
+  <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
 
-  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
-
-    <div class="form-group">
-      <label for="titre">Titre du livre</label>
-      <input id="titre" type="text" formControlName="titre" placeholder="Ex: Le Petit Prince">
+    <div class="bg-amber-400 p-6">
+      <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+        <span>📖</span> Ajouter un nouveau livre
+      </h2>
+      <p class="text-blue-100 text-sm mt-1">Enregistrez un nouvel ouvrage dans le catalogue de la bibliothèque.</p>
     </div>
 
-    <div class="form-group">
-      <label for="auteur">Auteur</label>
-      <input id="auteur" type="text" formControlName="auteur" placeholder="Antoine de Saint-Exupéry">
-    </div>
+    <form [formGroup]="bookForm" (ngSubmit)="onSubmit()" class="p-6 md:p-10">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-    <div class="row">
-      <div class="form-group">
-        <label for="isbn">ISBN</label>
-        <input id="isbn" type="text" formControlName="isbn" placeholder="9782070612758">
-      </div>
+        <div class="lg:col-span-2 space-y-6">
 
-      <div class="form-group">
-        <label for="category">Catégorie</label>
-        <select formControlName="categoryLibelle">
-          <option value="">Sélectionner une catégorie...</option>
-            @for (cat of categories; track cat.id) {
-              <option [value]="cat.libelle">{{ cat.libelle }}</option>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2 md:col-span-2">
+              <label class="text-sm font-bold text-slate-700">Titre du livre *</label>
+              <input type="text" formControlName="titre" placeholder="Ex: Le Seigneur des Anneaux"
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">Auteur *</label>
+              <input type="text" formControlName="auteur" placeholder="J.R.R. Tolkien"
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">ISBN *</label>
+              <input type="text" formControlName="isbn" placeholder="13 chiffres 9780261102354"
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">Catégorie *</label>
+              <select formControlName="categoryLibelle"
+                class="w-full p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
+                <option value="" disabled>Choisir une catégorie</option>
+                @for (cat of categories; track cat.id) {
+                  <option [value]="cat.libelle">{{ cat.libelle }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">URL de la couverture</label>
+              <input type="text" formControlName="couvertureUrl" placeholder="https://image-url.com/..."
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">Stock Total</label>
+              <input type="number" formControlName="nbExemplaires"
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-bold text-slate-700">Stock Disponible</label>
+              <input type="number" formControlName="nbExemplairesDisponibles"
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-2 md:col-span-2">
+              <label class="text-sm font-bold text-slate-700">Description / Résumé</label>
+              <textarea formControlName="description" rows="5" placeholder="Saisissez le résumé du livre ici..."
+                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-4">
+          <label class="text-sm font-bold text-slate-700 self-start">Aperçu de la couverture</label>
+          <div class="w-full aspect-[2/3] bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden">
+            @if (bookForm.get('couvertureUrl')?.value) {
+              <img [src]="bookForm.get('couvertureUrl')?.value" alt="Aperçu" class="w-full h-full object-contain shadow-lg">
+            } @else {
+              <div class="text-center p-6">
+                <span class="text-4xl block mb-2 opacity-30">🖼️</span>
+                <p class="text-xs text-slate-400">L'image apparaîtra ici après avoir saisi l'URL</p>
+              </div>
             }
-        </select>
+          </div>
+          <div class="text-[10px] text-slate-400 italic text-center">
+            Formats acceptés : JPG, PNG via lien direct (HTTP/HTTPS)
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea id="description" formControlName="description" rows="4"></textarea>
-    </div>
+      <div class="mt-10 pt-6 border-t border-slate-100 flex justify-end gap-4">
+        <button type="button" (click)="bookForm.reset()"
+          class="px-6 py-3 text-slate-600 font-semibold hover:text-slate-800 transition-colors">
+          Réinitialiser
+        </button>
+        <button type="submit" [disabled]="bookForm.invalid || isLoading"
+          class="px-10 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:bg-slate-300 disabled:shadow-none transition-all transform active:scale-95">
+          {{ isLoading ? '⏳ Enregistrement...' : 'Enregistrer le livre' }}
+        </button>
+      </div>
+    </form>
 
-    <div class="form-group">
-      <label for="couvertureUrl">URL de la couverture (Optionnel)</label>
-      <input id="couvertureUrl" type="url" formControlName="couvertureUrl" placeholder="https://...">
-    </div>
-
-    <div class="form-group">
-      <label for="nbExemplaires">Nombre d'exemplaires</label>
-      <input id="nbExemplaires" type="number" formControlName="nbExemplaires">
-    </div>
-
-    <button type="submit" [disabled]="bookForm.invalid || isLoading">
-      @if (isLoading) { Ajout en cours... } @else { Ajouter le livre }
-    </button>
-
-  </form>
+  </div>
 </div>
+@if (toast().show) {
+  <div class="fixed top-5 right-5 z-[100] animate-in fade-in slide-in-from-right-10 duration-300">
+    <div [class]="toast().type === 'success' ? 'bg-green-600 border-green-400' : 'bg-red-600 border-red-400'"
+         class="text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 border-2 min-w-[320px]">
+
+      <span class="text-2xl">
+        {{ toast().type === 'success' ? '✅' : '❌' }}
+      </span>
+
+      <div class="flex-1">
+        <p class="font-bold text-sm uppercase tracking-wider">
+          {{ toast().type === 'success' ? 'Succès' : 'Erreur' }}
+        </p>
+        <p class="text-sm opacity-90">{{ toast().message }}</p>
+      </div>
+
+      <button type="button" (click)="toast.update(t => ({...t, show: false}))" class="hover:bg-white/20 rounded-full p-1 transition-colors">
+        ✕
+      </button>
+    </div>
+  </div>
+}
