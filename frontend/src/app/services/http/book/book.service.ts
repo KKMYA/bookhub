@@ -33,26 +33,27 @@ export class BookService {
         .subscribe();
     }
 
-    //  public updateBook(datas: Book){
-    //   this.http.put(ApiEndpoint, datas)
-    //   .subscribe();
-    //  }
-    // TODO  si la suppression ne se fait pas afficher un message utilisateur
-    //  public deleteBook(bookId : number) : Promise<void> {
-    //   const promise = new Promise<void>((resolve) =>{
-    //     this.http.delete<void>(`${ApiEndpoint}/${bookId}`, {
-    //       headers : {
-    //     'Content-Type':'application/json,charset=utf-8'
-    //       }
-    //     })
-    //     .subscribe({
-    //       complete() {
-    //         resolve();
-    //       }
-    //     });
-    //   });
-    //   return promise;
-    //  }
+     public updateBook(datas: Book){
+      this.http.put(Endpoints.updateBooksApiEndpoint, datas)
+      .subscribe();
+     }
+
+
+     public deleteBook(bookId : number) : Promise<void> {
+      const promise = new Promise<void>((resolve) =>{
+        this.http.delete<void>(`${Endpoints.deleteBooksApiEndpoint}/${bookId}`, {
+          headers : {
+        'Content-Type':'application/json,charset=utf-8'
+          }
+        })
+        .subscribe({
+          complete() {
+            resolve();
+          }
+        });
+      });
+      return promise;
+     }
 
 
 }

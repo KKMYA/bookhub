@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { BookService } from '../../../../services/http/book/book.service';
 import { CategoryService } from '../../../../services/http/category/category.service';
 import { CategoryFilter } from '../../../../models/category.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 //WIP a deplacer
@@ -20,6 +20,7 @@ export class BookFormComponent implements OnInit {
   private bookService = inject(BookService);
   private categoryService = inject(CategoryService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   toast = signal<ToastState>({ show: false, message: '', type: 'success' });
 
   bookForm: FormGroup;
@@ -30,9 +31,8 @@ export class BookFormComponent implements OnInit {
     this.bookForm = this.fb.group({
       titre: ['', [Validators.required, Validators.maxLength(255)]],
       auteur: ['', [Validators.required, Validators.maxLength(150)]],
-      isbn: ['', [Validators.required, Validators.pattern(/^(978|979)?\d{10}(\d{3})?$/)]],
+      isbn: ['', [Validators.required ]],
       description: ['', [Validators.maxLength(2000)]],
-      // Regex pour URL
       couvertureUrl: ['', [Validators.pattern(/^(http|https):\/\/.*/)]],
       nbExemplaires: [1, [Validators.required, Validators.min(0)]],
       nbExemplairesDisponibles: [1, [Validators.required, Validators.min(0)]],
@@ -41,11 +41,27 @@ export class BookFormComponent implements OnInit {
   }
 
   async ngOnInit() {
+
     try {
       this.categories = await this.categoryService.fetchCategories();
     } catch (err) {
       console.error("Erreur catégories", err);
     }
+
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      // OUI -> On est en mode édition
+      this.loadBookToForm(+id);
+    }
+  }
+
+  loadBookToForm(id: number) {
+    this.bookService.getBookById(id).subscribe({
+      next: (book) => {
+        this.bookForm.patchValue(book);
+      },
+      error: () => console.error("Impossible de récupérer le livre")
+    });
   }
 
   // Petit helper pour savoir si un champ est invalide dans le HTML
@@ -60,18 +76,22 @@ export class BookFormComponent implements OnInit {
       try {
         const payload = {
           ...this.bookForm.value,
+        couvertureUrl: this.bookForm.value.couvertureUrl?.trim() || null,
+        description: this.bookForm.value.description?.trim() || null,
+        isbn: this.bookForm.value.isbn.replace(/\s/g, ''),
           noteMoyenne: 0
         };
+        console.log("Payload à envoyer", payload);
         await this.bookService.createBook(payload);
 
         this.toast.set({ show: true, message: 'Livre enregistré !', type: 'success' });
 
         setTimeout(() => {
           this.toast.update(t => ({ ...t, show: false }));
-          this.router.navigate(['/dashboard/librarian']);
+          this.router.navigate(['/dashboard/librarian'],{ onSameUrlNavigation: 'reload' });
         }, 2000);
         this.bookForm.reset({ nbExemplaires: 1, nbExemplairesDisponibles: 1 });
-        this.router.navigate(['/dashboard/librarian']);
+        this.router.navigate(['/dashboard/librarian'],{ onSameUrlNavigation: 'reload' });
 
 
       } catch (err) {

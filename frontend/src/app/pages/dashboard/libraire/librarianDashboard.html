@@ -34,7 +34,7 @@
           @if (isLoading) {
             <tr><td colspan="4" class="text-center py-8">Chargement...</td></tr>
           } @else {
-            @for (book of books; track book.idBook) {
+            @for (book of books(); track book.idBook) {
               <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-4 font-medium text-gray-900">{{ book.titre }}</td>
                 <td class="px-6 py-4 text-gray-600">{{ book.auteur }}</td>
@@ -44,11 +44,12 @@
 
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-3">
-                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                    <button  (click)="onEditBook(book.idBook)"
+                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                       title="Modifier">
                       <lucide-angular [img]="Pencil" class="w-5 h-5"></lucide-angular>
                     </button>
-                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">
+                    <button (click)="deleteBook(book.idBook)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">
                       <lucide-angular [img]="Trash2" class="w-5 h-5"></lucide-angular>
                     </button>
                   </div>
@@ -60,6 +61,29 @@
           }
         </tbody>
       </table>
+    </div>
+        <div class="mt-8 flex items-center justify-center gap-4">
+        <button
+            type="button"
+            (click)="goToPreviousPage()"
+            [disabled]="currentPage === 0 || isLoading"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+            Précédent
+        </button>
+
+        <p class="text-sm text-gray-700">
+            Page {{ totalPages === 0 ? 0 : currentPage + 1 }} / {{ totalPages }}
+        </p>
+
+        <button
+            type="button"
+            (click)="goToNextPage()"
+            [disabled]="isLoading || currentPage + 1 >= totalPages"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+            Suivant
+        </button>
     </div>
   </div>
 </div>

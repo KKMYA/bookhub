@@ -22,7 +22,7 @@ export const routes: Routes = [
     { path: "reservations", component: Reservations, canActivate: [authGuard] },
     { path: 'dashboard/librarian', component: LibrarianDashboard, canActivate: [authGuard]  },
     { path: 'api/books/create', component: BookFormComponent, canActivate: [authGuard] },
-
+    { path: 'api/books/edit/:id', component: BookFormComponent, canActivate: [authGuard] },
     // { path: 'dashboard/admin', component: AdminDashboard, canActivate: [authGuard] }, a decommenter quand l'adminDashboard sera implementer
     { path: "book/:id", component: BookDetail, canActivate: [authGuard] },
 
