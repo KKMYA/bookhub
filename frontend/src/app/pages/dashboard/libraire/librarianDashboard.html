@@ -1,0 +1,65 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Gestion du Catalogue</h1>
+      </div>
+
+      <button
+        (click)="onAddBook()"
+        class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm">
+        <lucide-angular [img]="Plus" class="w-5 h-5"></lucide-angular>
+        Ajouter un livre
+      </button>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs font-bold">
+          <tr>
+            <th class="px-6 py-4">Titre</th>
+            <th class="px-6 py-4">Auteur</th>
+            <!-- <th class="px-6 py-4">Isbn</th> -->
+            <th class="px-6 py-4">Category</th>
+            <!-- <th class="px-6 py-4">Description</th> -->
+            <th class="px-6 py-4">couverture</th>
+            <th class="px-6 py-4">noteMoyenne</th>
+            <!-- <th class="px-6 py-4">nb Exemplaires</th>
+            <th class="px-6 py-4">nb Exemplaires Disponibles</th> -->
+            <th class="px-6 py-4 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          @if (isLoading) {
+            <tr><td colspan="4" class="text-center py-8">Chargement...</td></tr>
+          } @else {
+            @for (book of books; track book.idBook) {
+              <tr class="hover:bg-gray-50 transition">
+                <td class="px-6 py-4 font-medium text-gray-900">{{ book.titre }}</td>
+                <td class="px-6 py-4 text-gray-600">{{ book.auteur }}</td>
+                <td class="px-6 py-4">{{ book.categoryLibelle || 'N/A' }}</td>
+                <td class="px-6 py-4">{{ book.couvertureUrl || 'N/A' }}</td>
+                <td class="px-6 py-4">{{ book.noteMoyenne || 'N/A' }}</td>
+
+                <td class="px-6 py-4">
+                  <div class="flex justify-center gap-3">
+                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                      title="Modifier">
+                      <lucide-angular [img]="Pencil" class="w-5 h-5"></lucide-angular>
+                    </button>
+                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">
+                      <lucide-angular [img]="Trash2" class="w-5 h-5"></lucide-angular>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4" class="text-center py-8 text-gray-500">Aucun livre trouvé.</td></tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,8 @@ import { Register } from './pages/register/register';
 import { authGuard } from './guards/auth.guard';
 import { Logout } from './pages/logout/logout';
 import { Reservations } from './pages/reservations/reservations';
+import { DashboardPivot } from './pages/dashboard/dashboard';
+import { LibrarianDashboard } from './pages/dashboard/libraire/librarianDashboard';
 
 export const routes: Routes = [
     { path: "", component: Home },
@@ -21,6 +23,9 @@ export const routes: Routes = [
 
 
     { path: "book/:id", component: BookDetail, canActivate: [authGuard] },
+
+    { path: 'dashboard', component: DashboardPivot }, // L'entrée unique du menu
+    { path: 'librarian/dashboard', component: LibrarianDashboard },
 
     { path: "forbidden", component: Forbidden },
     { path: "**", component: NotFound }

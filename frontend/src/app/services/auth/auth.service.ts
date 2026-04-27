@@ -15,18 +15,30 @@ export class AuthService {
     private readonly platformId = inject(PLATFORM_ID);
     private readonly isBrowser = isPlatformBrowser(this.platformId);
     private readonly _loggedIn = signal<boolean>(false);
+    private _role: string | null = null;
+
+    readonly loggedIn = this._loggedIn.asReadonly();
 
     constructor(private http: HttpClient) {
         this.syncLoggedInState();
     }
 
-    readonly loggedIn = this._loggedIn.asReadonly();
+    public get role(): string | null {
+      if (!this.loggedIn) return null;
+
+      if (!this._role) {
+        const token = localStorage.getItem('token') ?? '';
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this._role = payload.role || payload.roles || payload.authorities || null;
+      }
+      return this._role;
+    }
 
     private syncLoggedInState(): void {
         this._loggedIn.set(this.isBrowser && !!localStorage.getItem('token'));
     }
 
-    private setToken(token: string): void {
+    private setUser(token: string): void {
         if (!this.isBrowser) {
             return;
         }
@@ -40,6 +52,7 @@ export class AuthService {
             return;
         }
 
+        this._role = null;
         localStorage.removeItem('token');
         this.syncLoggedInState();
     }
@@ -50,7 +63,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${Endpoints.getAuthApiEndpoint}/login`, request).pipe(
             tap(response => {
                 // On garde le token dans le localStorage
-                this.setToken(response.token);
+                this.setUser(response.token);
             })
         );
     }
@@ -60,7 +73,7 @@ export class AuthService {
         this.syncLoggedInState();
         return this.http.post<AuthResponse>(`${Endpoints.getAuthApiEndpoint}/register`, request).pipe(
             tap(response => {
-                this.setToken(response.token);
+                this.setUser(response.token);
             })
         );
     }
