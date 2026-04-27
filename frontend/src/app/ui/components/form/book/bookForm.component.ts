@@ -1,19 +1,26 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { BookService } from '../../../../services/http/book/book.service';
 import { CategoryService } from '../../../../services/http/category/category.service';
 import { CategoryFilter } from '../../../../models/category.model';
+import { Router } from '@angular/router';
 
+
+//WIP a deplacer
+type ToastState = { show: boolean, message: string, type: 'success' | 'error' };
 @Component({
-  selector: 'app-add-book',
+  selector: 'app-book-form',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './bookForm.component.html',
 })
-export class AddBookComponent implements OnInit {
+
+export class BookFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private bookService = inject(BookService);
   private categoryService = inject(CategoryService);
+  private router = inject(Router);
+  toast = signal<ToastState>({ show: false, message: '', type: 'success' });
 
   bookForm: FormGroup;
   categories: CategoryFilter[] = [];
@@ -35,7 +42,6 @@ export class AddBookComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      // On récupère les catégories pour le menu déroulant
       this.categories = await this.categoryService.fetchCategories();
     } catch (err) {
       console.error("Erreur catégories", err);
@@ -54,13 +60,30 @@ export class AddBookComponent implements OnInit {
       try {
         const payload = {
           ...this.bookForm.value,
-          noteMoyenne: 0 // On initialise la note à 0 pour un nouveau livre
+          noteMoyenne: 0
         };
         await this.bookService.createBook(payload);
+
+        this.toast.set({ show: true, message: 'Livre enregistré !', type: 'success' });
+
+        setTimeout(() => {
+          this.toast.update(t => ({ ...t, show: false }));
+          this.router.navigate(['/dashboard/librarian']);
+        }, 2000);
         this.bookForm.reset({ nbExemplaires: 1, nbExemplairesDisponibles: 1 });
-        alert('Livre enregistré !');
+        this.router.navigate(['/dashboard/librarian']);
+
+
       } catch (err) {
-        alert('Erreur lors de l\'enregistrement');
+       this.toast.set({
+          show: true,
+          message: 'Erreur lors de l\'ajout. Vérifiez l\'ISBN ou la connexion.',
+          type: 'error'
+        });
+        setTimeout(() => {
+          this.toast.update(t => ({ ...t, show: false }));
+        }, 5000);
+        console.error("Erreur lors de l'ajout du livre", err);
       } finally {
         this.isLoading = false;
       }

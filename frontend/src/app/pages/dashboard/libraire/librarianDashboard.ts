@@ -51,7 +51,7 @@ export class LibrarianDashboard implements OnInit, OnDestroy {
   }
 
   onAddBook(): void {
-    this.router.navigate(['/librarian/books/new']);
+    this.router.navigate(['/api/books/create']);
   }
 
   ngOnDestroy(): void {
