@@ -14,13 +14,50 @@ import { Router } from '@angular/router';
 export class Login {
     email = '';
     password = '';
+    emailError = '';
+    passwordError = '';
+    formError = '';
+
+    private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     constructor(
         private authService: AuthService,
         private router: Router
     ) { }
 
+    private validateForm(): boolean {
+        this.emailError = '';
+        this.passwordError = '';
+        this.formError = '';
+
+        const normalizedEmail = this.email.trim();
+
+        if (!normalizedEmail) {
+            this.emailError = 'Email obligatoire.';
+        } else if (!this.emailRegex.test(normalizedEmail)) {
+            this.emailError = "Format de l'email invalide.";
+        }
+
+        if (!this.password.trim()) {
+            this.passwordError = 'Mot de passe obligatoire.';
+        }
+
+        this.email = normalizedEmail;
+
+        const isValid = !this.emailError && !this.passwordError;
+
+        if (!isValid) {
+            this.formError = 'Merci de corriger les champs en erreur.';
+        }
+
+        return isValid;
+    }
+
     onLogin() {
+        if (!this.validateForm()) {
+            return;
+        }
+
         this.authService.login({ email: this.email, password: this.password }).subscribe({
             next: (response) => {
                 console.log('Connexion réussie !', response);
@@ -28,7 +65,7 @@ export class Login {
                 this.router.navigate(['/']);
             },
             error: (err) => {
-                alert('Erreur de connexion : ' + (err.error?.message || 'Identifiants incorrects'));
+                this.formError = 'Erreur de connexion : ' + (err.error?.message || 'Identifiants incorrects');
             }
         });
     }

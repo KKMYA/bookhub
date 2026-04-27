@@ -17,15 +17,88 @@ export class Register {
     email = '';
     password = '';
     confirmPassword = '';
+    nomError = '';
+    prenomError = '';
+    telephoneError = '';
+    emailError = '';
+    passwordError = '';
+    confirmPasswordError = '';
+    formError = '';
+
+    private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    private readonly phoneRegex = /^[0-9+()\s.-]{6,20}$/;
+    private readonly passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.*]).{12,}$/;
 
     constructor(
         private authService: AuthService,
         private router: Router
     ) {}
 
+    private validateForm(): boolean {
+        this.nomError = '';
+        this.prenomError = '';
+        this.telephoneError = '';
+        this.emailError = '';
+        this.passwordError = '';
+        this.confirmPasswordError = '';
+        this.formError = '';
+
+        const normalizedNom = this.nom.trim();
+        const normalizedPrenom = this.prenom.trim();
+        const normalizedTelephone = this.telephone.trim();
+        const normalizedEmail = this.email.trim();
+
+        if (!normalizedNom) {
+            this.nomError = 'Nom obligatoire.';
+        }
+
+        if (!normalizedPrenom) {
+            this.prenomError = 'Prénom obligatoire.';
+        }
+
+        if (!normalizedEmail) {
+            this.emailError = 'Email obligatoire.';
+        } else if (!this.emailRegex.test(normalizedEmail)) {
+            this.emailError = "Format de l'email invalide.";
+        }
+
+        if (normalizedTelephone && !this.phoneRegex.test(normalizedTelephone)) {
+            this.telephoneError = 'Format du numéro de téléphone invalide.';
+        }
+
+        if (!this.password.trim()) {
+            this.passwordError = 'Mot de passe obligatoire.';
+        } else if (!this.passwordRegex.test(this.password)) {
+            this.passwordError = 'Le mot de passe doit contenir au moins 12 caractères, avec une majuscule, une minuscule, un chiffre et un caractère spécial.';
+        }
+
+        if (!this.confirmPassword.trim()) {
+            this.confirmPasswordError = 'Confirmation du mot de passe obligatoire.';
+        } else if (this.password !== this.confirmPassword) {
+            this.confirmPasswordError = 'Les mots de passe ne correspondent pas.';
+        }
+
+        this.nom = normalizedNom;
+        this.prenom = normalizedPrenom;
+        this.telephone = normalizedTelephone;
+        this.email = normalizedEmail;
+
+        const isValid = !this.nomError
+            && !this.prenomError
+            && !this.telephoneError
+            && !this.emailError
+            && !this.passwordError
+            && !this.confirmPasswordError;
+
+        if (!isValid) {
+            this.formError = 'Merci de corriger les champs en erreur.';
+        }
+
+        return isValid;
+    }
+
     onRegister() {
-        if (this.password !== this.confirmPassword) {
-            alert('Les mots de passe ne correspondent pas !');
+        if (!this.validateForm()) {
             return;
         }
 
@@ -42,7 +115,7 @@ export class Register {
                 this.router.navigate(['/']);
             },
             error: (err) => {
-                alert('Erreur lors de l\'inscription : ' + (err.error?.message || 'Erreur inconnue'));
+                this.formError = 'Erreur lors de l\'inscription : ' + (err.error?.message || 'Erreur inconnue');
             }
         });
     }
