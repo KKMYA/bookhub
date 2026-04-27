@@ -9,7 +9,6 @@ import { Register } from './pages/register/register';
 import { authGuard } from './guards/auth.guard';
 import { Logout } from './pages/logout/logout';
 import { Reservations } from './pages/reservations/reservations';
-import { DashboardPivot } from './pages/dashboard/dashboard';
 import { LibrarianDashboard } from './pages/dashboard/libraire/librarianDashboard';
 
 export const routes: Routes = [
