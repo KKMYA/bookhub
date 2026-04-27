@@ -1,4 +1,8 @@
 package com.eni.bookhub.controller.dto.response;
 
-public record CategoryDto() {
+public record CategoryDto(
+        String libelle,
+        int id
+
+) {
 }

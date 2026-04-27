@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-//import { CategoryFilter } from "../../../models/category.model";
 import { Endpoints } from "../../../constants/endpoints";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
+import { CategoryFilter } from "../../../models/category.model";
 
 @Injectable({
     providedIn: 'root'
@@ -14,9 +14,8 @@ export class CategoryService {
         private http: HttpClient
     ) { }
 
-
-
-  // public fetchCategories(): Observable<CategoryFilter[]> {
-  //   return this.http.get<CategoryFilter[]>(`${Endpoints.getCategoriesApiEndpoint}`);
-  // }
+public async fetchCategories(): Promise<CategoryFilter[]> {
+  const categories$ = this.http.get<CategoryFilter[]>(`${Endpoints.getCategoriesApiEndpoint}`);
+  return await firstValueFrom(categories$);
+}
 }
