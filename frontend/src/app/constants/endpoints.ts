@@ -5,6 +5,7 @@ export class Endpoints {
 
     public static readonly getAuthApiEndpoint = 'http://localhost:9000/api/auth';
 
+    public static readonly getAccountApiEndpoint = 'http://localhost:9000/api/account';
     public static readonly searchBooksApiEndpoint = 'http://localhost:9000/api/books/search';
 
     public static readonly getCategoriesApiEndpoint = 'http://localhost:9000/api/categories';
