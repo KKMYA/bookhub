@@ -10,7 +10,7 @@
                 <span class="group-hover:underline font-bold text-2xl" (click)="closeMenu()">Les livres</span>
             </a>
 
-            @if (loggedIn) {
+            @if (loggedIn()) {
             <app-link href="/reservations" (click)="closeMenu()">Mes réservations</app-link>
             }
 
@@ -18,7 +18,7 @@
 
 
         <div class="pb-8 flex flex-col items-center justify-center gap-8">
-            @if (loggedIn) {
+            @if (loggedIn()) {
             <app-link href="/profile" (click)="closeMenu()">Mon compte</app-link>
             <app-link href="/logout" (click)="closeMenu()">Se deconnecter</app-link>
             } @else {
@@ -45,7 +45,7 @@
                 <span class="group-hover:underline font-bold text-2xl">Les livres</span>
             </a>
 
-           @if (loggedIn) {
+           @if (loggedIn()) {
                 @if (authService.role=== 'LIBRARIAN') {
                     <app-link href="/dashboard/librarian" (click)="closeMenu()" >
                         Tableau de bord
@@ -66,7 +66,7 @@
         </div>
 
         <div class="flex items-center gap-8">
-            @if (loggedIn) {
+            @if (loggedIn()) {
                 <app-link href="/profile" (click)="closeMenu()">Mon compte</app-link>
                 <app-link href="/logout" (click)="closeMenu()">Se déconnecter</app-link>
             } @else {

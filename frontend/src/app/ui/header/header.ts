@@ -15,20 +15,20 @@ export class Header {
     readonly MenuIcon = MenuIcon
     readonly menuOpen = signal(false);
     protected authService = inject(AuthService);
-    readonly loggedIn = this.authService.isLoggedIn;
+    readonly loggedIn = this.authService.loggedIn;
 
     constructor(
-        // private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef
     ) {}
 
 
     toggleMenu(): void {
         this.menuOpen.update((value) => !value);
-        // this.cdr.detectChanges();
+        this.cdr.detectChanges();
     }
 
     closeMenu(): void {
         this.menuOpen.set(false);
-        // this.cdr.detectChanges();
+        this.cdr.detectChanges();
     }
 }

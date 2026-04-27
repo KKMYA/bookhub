@@ -18,10 +18,10 @@ export class AuthService {
     private _role: string | null = null;
 
 
-    // readonly loggedIn = this._loggedIn.asReadonly();
+    readonly loggedIn = this._loggedIn.asReadonly();
 
     public get isLoggedIn(): boolean {
-      return this._loggedIn() ?? this.syncLoggedInState();
+        return this.syncLoggedInState();
     }
 
     constructor(private http: HttpClient) {
@@ -29,20 +29,24 @@ export class AuthService {
     }
 
     public get role(): string | null {
-      if (!this._loggedIn()) return null;
+        if (!this._loggedIn()) return null;
 
-      if (!this._role) {
-        const token = localStorage.getItem('token') ?? '';
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        this._role = payload.role || payload.roles || payload.authorities || null;
-      }
-      return this._role;
+        if (!this._role) {
+            const token = localStorage.getItem('token') ?? '';
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            this._role = payload.role || payload.roles || payload.authorities || null;
+        }
+        return this._role;
     }
 
     private syncLoggedInState(): boolean {
-      const isLoggedIn = this.isBrowser && !!localStorage.getItem('token');
-      this._loggedIn.set(isLoggedIn);
-      return isLoggedIn;
+        if (!this.isBrowser) {
+            return false;
+        }
+
+        const isLoggedIn = !!localStorage.getItem('token');
+        this._loggedIn.set(isLoggedIn);
+        return isLoggedIn;
     }
 
     private setToken(token: string): void {
@@ -50,6 +54,7 @@ export class AuthService {
             return;
         }
 
+        this._role = null;
         localStorage.setItem('token', token);
         this.syncLoggedInState();
     }
@@ -70,7 +75,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${Endpoints.getAuthApiEndpoint}/login`, request).pipe(
             tap(response => {
                 // On garde le token dans le localStorage
-              this.setToken(response.token);
+                this.setToken(response.token);
             })
         );
     }
