@@ -3,6 +3,7 @@ package com.eni.bookhub.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,7 +34,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/books").permitAll()
-                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN")
+//                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("LIBRARIAN")
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("LIBRARIAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasAnyRole("LIBRARIAN")
+
                         .anyRequest().authenticated()
                 )
 
