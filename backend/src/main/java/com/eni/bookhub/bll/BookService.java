@@ -2,6 +2,7 @@ package com.eni.bookhub.bll;
 
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 public interface BookService {
 
     PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable);
+
+    PaginatedFilesDto<BookDtoResponse> getBooksForDashboard(Pageable pageable);
 
     BookDetailDto findBookById(int id);
 
