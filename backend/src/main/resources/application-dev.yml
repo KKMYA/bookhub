@@ -1,0 +1,56 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=bookhub_db;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: Pa$$w0rd
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+app:
+  jwt:
+    secret:
+
+
+
+
+
+
+
+
+
+
+
+
+#spring:
+#  application:
+#    name: bookhub
+#  datasource:
+#    url: jdbc:sqlserver://localhost:1433;databaseName=bookhub_db;encrypt=true;trustServerCertificate=true
+#    username: sa
+#    password: Pa$$w0rd
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#app:
+#  jwt:
+#    secret: 3821282770444b39732138203642275b516a7849204b3f306e356a6526
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    path: /bookhub/api
+#
+#server:
+#  port: 9000

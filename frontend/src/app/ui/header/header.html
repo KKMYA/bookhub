@@ -10,7 +10,7 @@
                 <span class="group-hover:underline font-bold text-2xl" (click)="closeMenu()">Les livres</span>
             </a>
 
-            @if (loggedIn) {
+            @if (loggedIn()) {
             <app-link href="/reservations" (click)="closeMenu()">Mes réservations</app-link>
             }
 
@@ -18,8 +18,9 @@
 
 
         <div class="pb-8 flex flex-col items-center justify-center gap-8">
-            @if (loggedIn) {
+            @if (loggedIn()) {
             <app-link href="/profile" (click)="closeMenu()">Mon compte</app-link>
+            <app-link href="/logout" (click)="closeMenu()">Se deconnecter</app-link>
             } @else {
             <app-link href="/register" (click)="closeMenu()">S'inscrire</app-link>
             <app-link href="/login" (click)="closeMenu()">Se connecter</app-link>
@@ -28,37 +29,44 @@
     </div>
 </div>
 
-
 <header class="bg-gray-300 p-4 flex items-center justify-between h-36">
     <div class="flex flex-row items-center justify-between lg:hidden w-full">
         <button class="block lg:hidden" type="button" [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()">
             <lucide-icon [img]="MenuIcon" [class.menu-rotate]="menuOpen()"></lucide-icon>
         </button>
-
         <img src="icon.webp" alt="Icône" />
     </div>
 
-    <div class="hidden items-center justify-between lg:flex flex-row w-full">
-        <div class="flex items-center justify-center gap-8">
-            <a href="/" class="flex flex-row items-center justify-center group gap-4">
-                <img src="icon.webp" alt="Icône" />
+    <div class="hidden items-center justify-between lg:flex flex-row w-full h-full">
 
+        <div class="flex items-center gap-8">
+            <a href="/" class="flex flex-row items-center group gap-4">
+                <img src="icon.webp" alt="Icône" />
                 <span class="group-hover:underline font-bold text-2xl">Les livres</span>
             </a>
 
-
-            @if (loggedIn) {
-            <app-link href="/reservations">Mes réservations</app-link>
+            @if (loggedIn()) {
+                @if (authService.role === 'ADMIN' || authService.role === 'LIBRARIAN') {
+                    <app-link href="/dashboard" (click)="closeMenu()" >
+                        Tableau de bord
+                    </app-link>
+                } @else {
+                    <app-link href="/reservations" (click)="closeMenu()">
+                        Mes réservations
+                    </app-link>
+                }
             }
         </div>
 
-        <div class="flex items-center justify-center gap-8">
-            @if (loggedIn) {
-            <app-link href="/profile">Mon compte</app-link>
+        <div class="flex items-center gap-8">
+            @if (loggedIn()) {
+                <app-link href="/profile" (click)="closeMenu()">Mon compte</app-link>
+                <app-link href="/logout" (click)="closeMenu()">Se déconnecter</app-link>
             } @else {
-            <app-link href="/register">S'inscrire</app-link>
-            <app-link href="/login">Se connecter</app-link>
+                <app-link href="/register" (click)="closeMenu()">S'inscrire</app-link>
+                <app-link href="/login" (click)="closeMenu()">Se connecter</app-link>
             }
         </div>
+
     </div>
 </header>

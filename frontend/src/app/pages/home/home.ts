@@ -1,114 +1,79 @@
-import { Component, inject, OnInit} from '@angular/core';
-import { Book } from '../../models/book.model';
+import { afterNextRender, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { BookHome } from '../../models/book.model';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
-import { Modal } from "../../ui/components/modal/modal";
-import { Observable } from 'rxjs/internal/Observable';
-import { BookService } from '../../service/http/book/bookService';
-import { AsyncPipe } from '@angular/common';
+import { BookService } from '../../services/http/book/book.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-home',
     standalone: true,
     imports: [
-        AsyncPipe,
         Button,
         LucideAngularModule,
+        RouterModule,
     ],
     templateUrl: './home.html'
 })
 
 export class Home implements OnInit {
+    private bookService = inject(BookService);
+    private cdr = inject(ChangeDetectorRef);
+
     readonly Star = Star;
+    readonly pageSize: number = 9;
 
     loggedIn: boolean = false;
+    books: BookHome[] = [];
 
-    // books: Book[] = [
-    //     {
-    //         id: 1,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 2,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 3,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 4,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 5,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 6,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    //     {
-    //         id: 7,
-    //         title: 'Le Seigneur des Anneaux',
-    //         author: 'J.R.R. Tolkien',
-    //         rating: 4.5,
-    //         imageUrl: 'https://m.media-amazon.com/images/I/71ADh-KokpL._AC_UF1000,1000_QL80_.jpg',
-    //         available: true
-    //     },
-    // ]
+    public total: number = 0;
+    public currentPage: number = 0;
+    public totalPages: number = 0;
+    public isLoading: boolean = false;
 
-  private bookService = inject(BookService);
-  books!: Book[];
-  books$! : Observable<Book[]>;
-
-//   ngOnInit(): void {
-// console.log("Initialisation du composant Home...");
-//   this.bookService.getBooks().subscribe({
-//     next: (data) => console.log("Données reçues du back !", data),
-//     error: (err) => console.error("L'appel a échoué :", err)
-//   });
-
-//   // this.books$ = this.bookService.getBooks();
-//   }
-
-//Test de la méthode getBooks() du service BookService avec un suscribe
-ngOnInit(): void {
-  console.log("Tentative d'appel au service...");
-
-  this.bookService.getBooks().subscribe({
-    next: (data) => {
-      console.log("OUI ! Données reçues :", data);
-      this.books = data;
-    },
-    error: (err) => {
-      console.error("ERREUR RÉSEAU :", err);
+    ngOnInit(): void {
+        this.loadBooks();
     }
-  });
-}
+
+    loadBooks(page: number = this.currentPage): void {
+        if (page < 0) {
+            return;
+        }
+
+        this.isLoading = true;
+        this.bookService.fetchBooks(page, this.pageSize).subscribe({
+            next: (response) => {
+                this.books = response.data;
+                this.total = response.totalElements;
+                this.currentPage = page;
+                this.totalPages = Math.ceil(this.total / this.pageSize);
+
+                this.cdr.detectChanges();
+            },
+            error: (error) => {
+                console.error('Erreur lors du chargement des livres :', error);
+                this.books = [];
+                this.total = 0;
+                this.totalPages = 0;
+            },
+            complete: () => {
+                this.isLoading = false;
+                
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    goToPreviousPage(): void {
+        if (this.currentPage > 0 && !this.isLoading) {
+            this.loadBooks(this.currentPage - 1);
+        }
+    }
+
+    goToNextPage(): void {
+        if (this.currentPage + 1 < this.totalPages && !this.isLoading) {
+            this.loadBooks(this.currentPage + 1);
+        }
+    }
 }
 

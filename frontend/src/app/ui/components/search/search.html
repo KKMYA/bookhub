@@ -1,0 +1,66 @@
+<div class="m-8 p-6 bg-white shadow-md rounded-lg">
+  <!-- <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col gap-4">
+
+    <div class="flex gap-2">
+      <div class="relative flex-grow">
+        <input
+          type="text"
+          formControlName="query"
+          placeholder="Rechercher par titre, auteur ou ISBN..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <button type="submit" class="bg-orange-400 text-white px-6 py-2 rounded-md hover:bg-orange-500 transition font-medium">
+        Rechercher
+      </button>
+
+      <button
+        type="button"
+        (click)="toggle()"
+        class="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-md border border-gray-200 transition"
+      >
+        {{ isExpanded ? 'Moins' : 'Plus' }}
+      </button>
+    </div>
+
+    <div
+      class="overflow-hidden transition-all duration-300"
+      [style.max-height]="isExpanded ? '150px' : '0px'"
+      [style.opacity]="isExpanded ? '1' : '0'"
+    >
+      <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            formControlName="isAvailable"
+            class="w-5 h-5 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
+          >
+          <span class="text-sm text-gray-700">Uniquement disponibles</span>
+        </label>
+        <div class="flex flex-col gap-1 min-w-[200px]">
+          <label class="text-xs font-semibold text-gray-500 uppercase">Catégorie</label>
+
+          <select
+            formControlName="category"
+            class="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-orange-400 transition-all"
+          >
+            <option value="">Toutes les catégories</option>
+
+            <option *ngFor="let cat of categories" [value]="cat.libelle">
+              {{ cat.libelle }}
+            </option>
+          </select>
+        </div>
+        <button
+          type="button"
+          (click)="resetFilters()"
+          class="text-xs text-blue-600 hover:underline uppercase tracking-wider font-semibold"
+        >
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+
+  </form> -->
+</div>
