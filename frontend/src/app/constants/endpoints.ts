@@ -11,4 +11,6 @@ export class Endpoints {
     public static readonly getCategoriesApiEndpoint = 'http://localhost:9000/api/categories';
 
     public static readonly getBooksForDashboardApiEndpoint = 'http://localhost:9000/api/books/dashboard';
+
+    public static readonly getAdminApiEndpoint = 'http://localhost:9000/api/admin';
 }
