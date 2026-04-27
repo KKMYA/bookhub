@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
 
     @Mapping(source = "idAccount", target = "id")
+    @Mapping(source = "role", target = "role")
     UserDto userEntityToUserDto(Account user);
 
 }

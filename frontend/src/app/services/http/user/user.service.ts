@@ -21,4 +21,21 @@ export class UserService {
   updatePassword(oldPassword: string, newPassword: string): Observable<void> {
     return this.http.put<void>(`${Endpoints.getAccountApiEndpoint}/password`, { oldPassword, newPassword });
   }
+
+
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${Endpoints.getAdminApiEndpoint}/users`);
+  }
+
+  updateUserByAdmin(user: User): Observable<User> {
+    return this.http.put<User>(`${Endpoints.getAdminApiEndpoint}/users`, user);
+  }
+
+  createUserByAdmin(user: any): Observable<User> {
+    return this.http.post<User>(`${Endpoints.getAdminApiEndpoint}/users`, user);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${Endpoints.getAdminApiEndpoint}/users/${id}`);
+  }
 }

@@ -34,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/books").permitAll()
                         .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN", "ADMIN")
+
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 
