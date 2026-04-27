@@ -1,6 +1,7 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.UserService;
+import com.eni.bookhub.controller.dto.request.PasswordUpdateRequest;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.UserDto;
 import com.eni.bookhub.exception.BookhubException;
@@ -10,13 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/account")
@@ -31,6 +28,20 @@ public class UserController {
         String email = authentication.getName();
         UserDto userDto = userService.getUserByEmail(email);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto) {
+        UserDto updatedUser = userService.updateUser(userDto);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<Void> updatePassword(@RequestBody PasswordUpdateRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        userService.updatePassword(email, request);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Récupérer un livre par son ID",

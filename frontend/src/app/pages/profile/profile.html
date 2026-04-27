@@ -13,17 +13,17 @@
     <div class="flex flex-col w-full gap-4">
       <div class="flex flex-col justify-center w-full">
         <label for="nom">Nom</label>
-        <app-input id="nom" type="text" (valueChange)="account.nom = $event"></app-input>
+        <app-input id="nom" type="text" [(value)]="account.nom"></app-input>
       </div>
 
       <div class="flex flex-col justify-center w-full">
         <label for="prenom">Prénom</label>
-        <app-input id="prenom" type="text" (valueChange)="account.prenom = $event"></app-input>
+        <app-input id="prenom" type="text" [(value)]="account.prenom"></app-input>
       </div>
 
       <div class="flex flex-col justify-center w-full">
         <label for="telephone">Numéro de téléphone</label>
-        <app-input id="telephone" type="tel" (valueChange)="account.telephone = $event"></app-input>
+        <app-input id="telephone" type="tel" [(value)]="account.telephone"></app-input>
       </div>
 
       <app-button class="w-full" (click)="onUpdateInfo()">
@@ -36,7 +36,7 @@
     <div class="flex flex-col w-full gap-4">
       <div class="flex flex-col justify-center w-full">
         <label for="email">Email</label>
-        <app-input id="email" type="email" autocomplete="email" (valueChange)="account.email = $event"></app-input>
+        <app-input id="email" type="email" autocomplete="email" [(value)]="account.email"></app-input>
       </div>
 
       <app-button class="w-full" (click)="onUpdateEmail()">

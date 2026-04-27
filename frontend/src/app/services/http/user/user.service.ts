@@ -17,4 +17,8 @@ export class UserService {
   updateProfile(user: User): Observable<User> {
     return this.http.put<User>(`${Endpoints.getAccountApiEndpoint}/update`, user);
   }
+
+  updatePassword(oldPassword: string, newPassword: string): Observable<void> {
+    return this.http.put<void>(`${Endpoints.getAccountApiEndpoint}/password`, { oldPassword, newPassword });
+  }
 }

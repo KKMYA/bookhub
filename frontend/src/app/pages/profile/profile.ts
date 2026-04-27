@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Button } from '../../ui/components/button/button';
 import { PasswordInput } from '../../ui/components/input-password/input-password';
 import { Input } from '../../ui/components/input/input';
@@ -12,6 +12,7 @@ import { UserService } from '../../services/http/user/user.service';
 })
 export class Profile implements OnInit {
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   account: User = { id: 0, nom: '', prenom: '', email: '', telephone: '' };
 
@@ -26,7 +27,10 @@ export class Profile implements OnInit {
 
   ngOnInit(): void {
     this.userService.getProfile().subscribe({
-      next: (user) => (this.account = user),
+      next: (user) => {
+        this.account = user;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error('Erreur chargement profil', err),
     });
   }
@@ -37,10 +41,12 @@ export class Profile implements OnInit {
         this.account = updatedUser;
         this.successMessage = 'Informations mises à jour.';
         this.errorMessage = '';
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = 'Erreur lors de la mise à jour.';
         console.error(err);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -50,10 +56,12 @@ export class Profile implements OnInit {
       next: () => {
         this.successMessage = 'Email mis à jour.';
         this.errorMessage = '';
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = "Erreur lors de la mise à jour de l'email.";
         console.error(err);
+        this.cdr.detectChanges();
       },
     });
   }
@@ -84,15 +92,21 @@ export class Profile implements OnInit {
       return;
     }
 
-    this.userService.updateProfile(this.account).subscribe({
+    this.userService.updatePassword(this.oldPassword, this.newPassword).subscribe({
       next: () => {
         this.successMessage = 'Mot de passe mis à jour.';
         this.errorMessage = '';
         this.closePasswordModal();
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.passwordError = 'Ancien mot de passe incorrect.';
+        if (err.error?.message === 'Ancien mot de passe incorrect.') {
+          this.passwordError = 'Ancien mot de passe incorrect.';
+        } else {
+          this.passwordError = 'Une erreur est survenue lors de la mise à jour.';
+        }
         console.error(err);
+        this.cdr.detectChanges();
       },
     });
   }
