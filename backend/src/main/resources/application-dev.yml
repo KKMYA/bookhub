@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=bookhub_db;encrypt=true;trustServerCertificate=true
     username: sa
-    password: Pa$$w0rd
+    password: admin
   jpa:
     hibernate:
       ddl-auto: update

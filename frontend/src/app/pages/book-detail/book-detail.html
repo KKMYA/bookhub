@@ -1,92 +1,85 @@
 @if (book) {
 
-<div class="flex flex-col p-8 gap-8">
+  <div class="flex flex-col p-8 gap-8">
+
+    <!-- HEADER -->
     <div class="flex flex-row justify-between">
-        <div class="flex flex-row gap-4 w-2/6">
-            <img [src]="book.couvertureUrl" [alt]="book.titre" class="w-48 h-64 object-cover">
+      <div class="flex flex-row gap-4 w-2/6">
 
-            <div class="flex flex-col justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold">{{ book.titre }}</h1>
+        <img [src]="book.couvertureUrl" [alt]="book.titre" class="w-48 h-64 object-cover">
 
-                    <div class="flex flex-row items-center gap-2">
-                        <p class="text-gray-600">{{ book.noteMoyenne }}</p>
+        <div class="flex flex-col justify-between">
+          <div>
+            <h1 class="text-2xl font-bold">{{ book.titre }}</h1>
 
-                        <lucide-angular [img]="Star" class="text-yellow-400 fill-yellow-400"></lucide-angular>
-                    </div>
-                </div>
-
-                <p>
-                    {{ book.description}}
-                </p>
-
-                <app-button class="w-full">
-                    Réserver
-                </app-button>
+            <div class="flex flex-row items-center gap-2">
+              <p class="text-gray-600">{{ book.noteMoyenne }}</p>
+              <lucide-angular [img]="Star" class="text-yellow-400 fill-yellow-400"></lucide-angular>
             </div>
+          </div>
+
+          <p>{{ book.description }}</p>
+
+          <app-button class="w-full">
+            Réserver
+          </app-button>
+        </div>
+      </div>
+
+      <!-- INFOS -->
+      <div class="bg-gray-300 flex flex-col w-1/4 rounded-xl p-4 gap-8 h-full">
+        <h1 class="text-2xl font-bold">Informations</h1>
+
+        <div>
+          <h2 class="font-bold">Auteur</h2>
+          <p>{{ book.auteur }}</p>
         </div>
 
-        <div class="bg-gray-300 flex flex-col w-1/4 rounded-xl p-4 gap-8 h-full">
-            <h1 class="text-2xl font-bold">Informations</h1>
-
-            <div class="flex flex-col">
-                <h1 class="text-2xl font-bold">Auteur</h1>
-                <p>{{ book.auteur }}</p>
-            </div>
-
-            <div class="flex flex-col">
-                <h1 class="text-2xl font-bold">Catégorie</h1>
-                <p>{{ book.categoryLibelle }}</p>
-            </div>
-
+        <div>
+          <h2 class="font-bold">Catégorie</h2>
+          <p>{{ book.categoryLibelle }}</p>
         </div>
+      </div>
     </div>
 
+    <!-- COMMENTAIRES -->
     <div class="flex flex-col gap-4">
-        <h1 class="text-2xl font-bold">Commentaires ({{ comments.length }})</h1>
+      <h1 class="text-2xl font-bold">
+        Commentaires ({{ comments.length }})
+      </h1>
 
-        @if (comments.length === 0) {
-        <p class="text-center text-gray-600">Aucun commentaire pour ce livre.</p>
-        }
+      @if (comments.length === 0) {
+        <p class="text-center text-gray-600">
+          Aucun commentaire pour ce livre.
+        </p>
+      }
 
-        @for (comment of paginatedComments; track comment.id) {
+      @for (rating of comments; track rating.idRating) {
         <article class="flex flex-col rounded-xl bg-gray-100 p-4 gap-3">
-            <div class="flex items-center justify-between">
-                <p class="font-semibold">{{ comment.author }}</p>
 
+          <div class="flex items-center justify-between">
 
+            <p class="font-semibold">{{ rating.firstName }} {{ rating.lastName?.charAt(0) }}.</p>
 
-                <div class="flex items-center gap-2">
-                    <p class="text-gray-700">{{ comment.rating }}</p>
-                    <lucide-angular [img]="Star" class="size-4 text-yellow-400 fill-yellow-400"></lucide-angular>
-                </div>
-
+            <div class="flex items-center gap-2">
+              <p>{{ rating.note }}</p>
+              <lucide-angular [img]="Star" class="size-4 text-yellow-400 fill-yellow-400"></lucide-angular>
             </div>
 
-            <p class="text-gray-700">{{ comment.content }}</p>
+          </div>
+
+          <p class="text-gray-700">{{ rating.commentaire }}</p>
+
+          <small class="text-gray-500">
+            {{ rating.datePublication | date:'short' }}
+          </small>
+
         </article>
-        }
-
-        @if (comments.length > 0) {
-        <div class="mt-2 flex items-center justify-center gap-4">
-            <button type="button" (click)="goToPreviousCommentsPage()" [disabled]="currentCommentPage === 0"
-                class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50 hover:cursor-pointer">
-                Précédent
-            </button>
-
-            <p class="text-sm text-gray-700">
-                Page {{ currentCommentPage + 1 }} / {{ totalCommentPages === 0 ? 1 : totalCommentPages }}
-            </p>
-
-            <button type="button" (click)="goToNextCommentsPage()"
-                [disabled]="currentCommentPage + 1 >= totalCommentPages"
-                class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50 hover:cursor-pointer">
-                Suivant
-            </button>
-        </div>
-        }
+      }
     </div>
-</div>
+
+  </div>
+
 } @else {
-<p class="text-center text-gray-600">Livre non trouvé.</p>
+  <p class="text-center text-gray-600">Livre non trouvé.</p>
 }

@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class RatingDto {
-
     private Long idRating;
     private Integer note;
     private String commentaire;
     private LocalDateTime datePublication;
     private Boolean moderation;
     private Long idBook;
-    private Long idUser;
+    private Long idAccount;
+    private String firstName;
+    private String lastName;
 }

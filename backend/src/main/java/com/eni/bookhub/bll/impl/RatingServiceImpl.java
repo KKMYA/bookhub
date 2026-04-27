@@ -1,21 +1,26 @@
 package com.eni.bookhub.bll.impl;
 
 import com.eni.bookhub.bll.RatingService;
+import com.eni.bookhub.bo.Account;
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.bo.Rating;
 import com.eni.bookhub.controller.dto.mapper.RatingMapper;
 import com.eni.bookhub.controller.dto.request.CreateRatingRequestDTO;
 import com.eni.bookhub.controller.dto.request.UpdateRatingRequestDTO;
 import com.eni.bookhub.controller.dto.response.RatingDto;
+import com.eni.bookhub.repository.AccountRepository;
 import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.RatingRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Implémentation du service pour l'entité Rating.
@@ -54,6 +59,14 @@ public class RatingServiceImpl implements RatingService {
     private final BookRepository bookRepository;
 
     /**
+     * Repository d'accès aux utilisateurs
+     *
+     * Utilisé pour rattacher correctement un avis
+     * à un utilisateur existant en base
+     */
+    private final AccountRepository accountRepository;
+
+    /**
      * Mapper de conversion Rating -> RatingDto.
      */
     private final RatingMapper ratingMapper;
@@ -77,12 +90,21 @@ public class RatingServiceImpl implements RatingService {
         Book book = bookRepository.findById(Math.toIntExact(idBook))
                 .orElseThrow(() -> new EntityNotFoundException("Livre introuvable avec l'id : " + idBook));
 
+        String email = Objects.requireNonNull(SecurityContextHolder.getContext()
+                        .getAuthentication())
+                .getName();
+
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Compte introuvable : " + email));
+
         Rating rating = new Rating();
         rating.setNote(request.note());
         rating.setCommentaire(request.commentaire());
         rating.setModeration(false);
         rating.setDatePublication(LocalDateTime.now());
         rating.setBook(book);
+        rating.setAccount(account);
+
 
         Rating savedRating = ratingRepository.save(rating);
         return ratingMapper.toDto(savedRating);
@@ -99,14 +121,17 @@ public class RatingServiceImpl implements RatingService {
      * @param idRating identifiant de l'avis à valider
      * @return le DTO de l'avis validé
      */
-    @Override
+    @Transactional
     public RatingDto validateRating(Long idRating) {
         Rating rating = ratingRepository.findById(idRating)
-                .orElseThrow(() -> new EntityNotFoundException("Avis introuvable avec l'id : " + idRating));
+                .orElseThrow();
 
         rating.setModeration(true);
-
         Rating savedRating = ratingRepository.save(rating);
+
+        Book book = rating.getBook();
+        recalculateAverage(book);
+
         return ratingMapper.toDto(savedRating);
     }
 
@@ -135,7 +160,13 @@ public class RatingServiceImpl implements RatingService {
         // Toute modification invalide la validation précédente
         rating.setModeration(false);
 
+
         Rating savedRating = ratingRepository.save(rating);
+
+        Book book = rating.getBook();
+
+        recalculateAverage(book);
+
         return ratingMapper.toDto(savedRating);
     }
 
@@ -145,14 +176,17 @@ public class RatingServiceImpl implements RatingService {
      * @param idRating identifiant de l'avis à supprimer
      */
     @Override
+    @Transactional
     public void deleteRating(Long idRating) {
-        if (!ratingRepository.existsById(idRating)) {
-            throw new EntityNotFoundException("Avis introuvable avec l'id : " + idRating);
-        }
+        Rating rating = ratingRepository.findById(idRating)
+                .orElseThrow(() -> new EntityNotFoundException("Avis introuvable avec l'id : " + idRating));
 
-        ratingRepository.deleteById(idRating);
+        Book book = rating.getBook();
+
+        ratingRepository.delete(rating);
+
+        recalculateAverage(book);
     }
-
     /**
      * Retourne un avis selon son identifiant.
      *
@@ -220,5 +254,17 @@ public class RatingServiceImpl implements RatingService {
     public Double getAverageRatingByBook(Long idBook) {
         Double average = ratingRepository.getAverageRatingByBook(idBook);
         return average != null ? average : 0.0;
+    }
+
+    /**
+     * Méthode utilitaire permettant de recalculer la note moyenne d'un livre
+     * lors de la validation d'un avis, de sa modification ou de sa suppression.
+     *
+     * @param book
+     */
+    private void recalculateAverage(Book book) {
+        Double average = ratingRepository.getAverageRatingByBook(Long.valueOf(book.getIdBook()));
+        book.setNoteMoyenne(average != null ? average : 0.0);
+        bookRepository.save(book);
     }
 }

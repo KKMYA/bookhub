@@ -36,10 +36,11 @@ public class RatingMapper {
         if (rating.getBook() != null) {
             dto.setIdBook(Long.valueOf(rating.getBook().getIdBook()));
         }
-        // A implanter quand user prêt
-       // if (rating.getUser() != null) {
-       //     dto.setIdUser(rating.getUser().getIdUser());
-       // }
+        if (rating.getAccount() != null) {
+            dto.setIdAccount(rating.getAccount().getIdAccount());
+            dto.setFirstName(rating.getAccount().getPrenom());
+            dto.setLastName(rating.getAccount().getNom());
+        }
 
         return dto;
     }

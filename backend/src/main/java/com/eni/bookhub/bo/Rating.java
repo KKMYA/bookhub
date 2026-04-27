@@ -39,8 +39,8 @@ public class Rating {
     @JoinColumn(name = "id_book", nullable = false)
     private Book book;
 
-    // A réactiver quand Account/User sera prêt
-    // @ManyToOne
-    // @JoinColumn(name = "id_account", nullable = false)
-    // private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "id_account", nullable = false)
+    private Account account;
 }
