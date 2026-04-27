@@ -1,0 +1,53 @@
+<div class="form-container">
+  <h2>Ajouter un nouveau livre</h2>
+
+  <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-group">
+      <label for="titre">Titre du livre</label>
+      <input id="titre" type="text" formControlName="titre" placeholder="Ex: Le Petit Prince">
+    </div>
+
+    <div class="form-group">
+      <label for="auteur">Auteur</label>
+      <input id="auteur" type="text" formControlName="auteur" placeholder="Antoine de Saint-Exupéry">
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label for="isbn">ISBN</label>
+        <input id="isbn" type="text" formControlName="isbn" placeholder="9782070612758">
+      </div>
+
+      <div class="form-group">
+        <label for="category">Catégorie</label>
+        <select formControlName="categoryLibelle">
+          <option value="">Sélectionner une catégorie...</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.libelle">{{ cat.libelle }}</option>
+            }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description" rows="4"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="couvertureUrl">URL de la couverture (Optionnel)</label>
+      <input id="couvertureUrl" type="url" formControlName="couvertureUrl" placeholder="https://...">
+    </div>
+
+    <div class="form-group">
+      <label for="nbExemplaires">Nombre d'exemplaires</label>
+      <input id="nbExemplaires" type="number" formControlName="nbExemplaires">
+    </div>
+
+    <button type="submit" [disabled]="bookForm.invalid || isLoading">
+      @if (isLoading) { Ajout en cours... } @else { Ajouter le livre }
+    </button>
+
+  </form>
+</div>
