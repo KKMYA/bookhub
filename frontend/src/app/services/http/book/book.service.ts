@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Book, BookDto, BookHome } from "../../../models/book.model";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
 import { Endpoints } from "../../../constants/endpoints";
 
@@ -20,7 +20,11 @@ export class BookService {
         return this.http.get<PaginatedFilesDto<BookHome>>(`${Endpoints.getBooksApiEndpoint}?page=${page}&size=${size}`);
     }
 
-    fetchBooksForDashboard(page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookDto>> {
+    //  async fetchBooksForDashboard(page: number = 0, size: number = 9): Promise<PaginatedFilesDto<BookDto>> {
+    //   const response = await firstValueFrom(this.http.get<PaginatedFilesDto<BookDto>>(`${Endpoints.getBooksForDashboardApiEndpoint}?page=${page}&size=${size}`));
+    //   return response;
+    //   }
+        fetchBooksForDashboard(page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookDto>> {
         return this.http.get<PaginatedFilesDto<BookDto>>(`${Endpoints.getBooksForDashboardApiEndpoint}?page=${page}&size=${size}`);
     }
 

@@ -20,12 +20,10 @@ export const routes: Routes = [
     { path: "logout", component: Logout, canActivate: [authGuard] },
     { path: "profile", component: Profile, canActivate: [authGuard] },
     { path: "reservations", component: Reservations, canActivate: [authGuard] },
-
-
+    { path: 'dashboard/librarian', component: LibrarianDashboard, canActivate: [authGuard]  },
+    // { path: 'dashboard/admin', component: AdminDashboard, canActivate: [authGuard] }, a decommenter quand l'adminDashboard sera implementer
     { path: "book/:id", component: BookDetail, canActivate: [authGuard] },
 
-    { path: 'dashboard', component: DashboardPivot }, // L'entrée unique du menu
-    { path: 'librarian/dashboard', component: LibrarianDashboard },
 
     { path: "forbidden", component: Forbidden },
     { path: "**", component: NotFound }

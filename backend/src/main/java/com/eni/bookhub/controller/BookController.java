@@ -53,9 +53,8 @@ public class BookController {
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
-
-
     @GetMapping("/dashboard")
+    @CrossOrigin(origins = "http://localhost:4200")
 //    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<PaginatedFilesDto<BookDtoResponse>> getAllBooksForLibrarianDashboard(
             @PageableDefault(page = 0, size = 9) Pageable pageable) {
