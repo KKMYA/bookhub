@@ -3,6 +3,7 @@ package com.eni.bookhub.controller;
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,6 +53,19 @@ public class BookController {
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
+
+
+    @GetMapping("/dashboard")
+//    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<PaginatedFilesDto<BookDtoResponse>> getAllBooksForLibrarianDashboard(
+            @PageableDefault(page = 0, size = 9) Pageable pageable) {
+
+        PaginatedFilesDto<BookDtoResponse> allBooks = bookService.getBooksForDashboard(pageable);
+        if (allBooks.data().isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return new ResponseEntity<>(allBooks, HttpStatus.OK);
+    }
     /**
      * Suppression d'un livre
      *
