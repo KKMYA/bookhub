@@ -1,6 +1,9 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
+import com.eni.bookhub.controller.dto.request.BookDto;
+import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -8,11 +11,14 @@ import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +29,6 @@ public class BookController {
     private final BookService bookService;
     /**
      * Read - Get all books
-     *
      * @return - An Iterable object of Book full filled
      */
     @GetMapping()
@@ -49,54 +54,66 @@ public class BookController {
     }
 
 
+
+    @GetMapping("/dashboard")
+//    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<PaginatedFilesDto<BookDtoResponse>> getAllBooksForLibrarianDashboard(
+            @PageableDefault(page = 0, size = 9) Pageable pageable) {
+
+        PaginatedFilesDto<BookDtoResponse> allBooks = bookService.getBooksForDashboard(pageable);
+        if (allBooks.data().isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return new ResponseEntity<>(allBooks, HttpStatus.OK);
+    }
     /**
      * Suppression d'un livre
      *
      * @return no return
      */
-//    @DeleteMapping("/{id}")
-//    @Operation(
-//            tags = "Bookhub",
-//            summary = "Suppression",
-//            description = "Suppréssion d'un livre",
-//            security = @SecurityRequirement(name = "bearer_key")
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Remove book ok"),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-//    })
+    @DeleteMapping("/{id}")
+    @Operation(
+            tags = "Bookhub",
+            summary = "Suppression",
+            description = "Suppréssion d'un livre",
+            security = @SecurityRequirement(name = "bearer_key")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Remove book ok"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
 
-//    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-//        try {
-//            bookService.deleteBook(id);
-//        } catch (BookhubException e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
-//    /**
-//     * Create book
-//     *
-//     * @param bookDto
-//     * @return a new book dto
-//     */
-//    @PostMapping()
-//    @Operation(
-//            tags = "Bookhub",
-//            summary = "création d'un livre",
-//            description = "création d'un livre livres",
-//            security = @SecurityRequirement(name = "bearer_key")
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success for create book "),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-//    })
-//    public ResponseEntity<BookDto> create(@RequestBody BookDto bookDto) {
-//        BookDto result;
-//        result = bookService.createBook(bookDto);
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        try {
+            bookService.deleteBook(id);
+        } catch (BookhubException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Create book
+     *
+     * @param bookDto
+     * @return a new book dto
+     */
+    @PostMapping()
+    @Operation(
+            tags = "Bookhub",
+            summary = "création d'un livre",
+            description = "création d'un livre livres",
+            security = @SecurityRequirement(name = "bearer_key")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success for create book "),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<BookDto> create(@Valid @RequestBody BookDto bookDto) {
+        BookDto result;
+        result = bookService.createBook(bookDto);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
     /**
      * Find one Book by ID
      * @return bookDto
@@ -119,30 +136,50 @@ public class BookController {
         return new ResponseEntity<>(bookDto, HttpStatus.OK);
     }
 
+    /**
+     * Update Book
+     * @param bookDto
+     * @return updating book dto
+     */
+    @PutMapping()
+    @Operation(
+            tags = "Bookhub",
+            summary = "création d'un livre",
+            description = "création d'un livre",
+            security = @SecurityRequirement(name = "bearer_key")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success for create book "),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<BookDto> update(@Valid @RequestBody BookDto bookDto) {
+        try{
+            bookService.updateBook(bookDto);
+        }catch (BookhubException e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(bookDto, HttpStatus.OK);
+    }
 
-//    /**
-//     * Update Book
-//     * @param bookDto
-//     * @return updating book dto
-//     */
-//    @PutMapping()
-//    @Operation(
-//            tags = "Bookhub",
-//            summary = "création d'un livre",
-//            description = "création d'un livre livres",
-//            security = @SecurityRequirement(name = "bearer_key")
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success for create book "),
-//            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-//    })
-//    public ResponseEntity<BookDto> update(@RequestBody BookDto bookDto) {
-//        try{
-//            bookService.updateBook(bookDto);
-//        }catch (BookhubException e){
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(bookDto, HttpStatus.OK);
-//    }
+    /**
+     * Recherche
+     * @return a new book dto
+     */
+    @PostMapping("/search")
+    @Operation(
+            tags = "Bookhub",
+            summary = "Recherche d'un livre",
+            description = "recherche d'un livre",
+            security = @SecurityRequirement(name = "bearer_key")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success for create book "),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<PaginatedFilesDto> search(@RequestBody BookSearchDto bookSearchDto,
+      @PageableDefault(page = 0, size = 9) Pageable pageable) {
+        PaginatedFilesDto<BookSumaryDto> result = bookService.searchBooks(bookSearchDto,pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 }

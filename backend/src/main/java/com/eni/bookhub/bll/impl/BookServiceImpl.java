@@ -6,6 +6,7 @@ import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -14,10 +15,8 @@ import com.eni.bookhub.exception.EntityAlreadyExistsException;
 import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.CategoryRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +41,15 @@ public class BookServiceImpl implements BookService {
 
         List<BookSumaryDto> BookListDtos = bookPage.getContent().stream()
                 .map(bookMapper::bookEntityToBookSumaryDto)
+                .toList();
+        return new PaginatedFilesDto<>(BookListDtos, bookPage.getTotalElements());
+    }
+
+    @Override
+    public PaginatedFilesDto<BookDtoResponse> getBooksForDashboard(Pageable pageable) {
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        List<BookDtoResponse> BookListDtos = bookPage.getContent().stream()
+                .map(bookMapper::bookEntityToBookDtoResponse)
                 .toList();
         return new PaginatedFilesDto<>(BookListDtos, bookPage.getTotalElements());
     }
@@ -80,6 +88,7 @@ public class BookServiceImpl implements BookService {
 
         }
     }
+
     @Override
     @Transactional
     public BookDto updateBook(BookDto bookDto) throws BookhubException {
@@ -95,7 +104,6 @@ public class BookServiceImpl implements BookService {
             System.out.println("Recovery error : " + e.getMessage());
             throw new BookhubException("Can't update this book");
         }
-
     }
 
     @Override
