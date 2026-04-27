@@ -18,10 +18,10 @@ export class AuthService {
     private _role: string | null = null;
 
 
-    readonly loggedIn = this._loggedIn.asReadonly();
+    // readonly loggedIn = this._loggedIn.asReadonly();
 
     public get isLoggedIn(): boolean {
-      return this.loggedIn() ?? this.syncLoggedInState();
+      return this._loggedIn() ?? this.syncLoggedInState();
     }
 
     constructor(private http: HttpClient) {
@@ -29,7 +29,7 @@ export class AuthService {
     }
 
     public get role(): string | null {
-      if (!this.loggedIn()) return null;
+      if (!this._loggedIn()) return null;
 
       if (!this._role) {
         const token = localStorage.getItem('token') ?? '';

@@ -15,7 +15,7 @@ export class Header {
     readonly MenuIcon = MenuIcon
     readonly menuOpen = signal(false);
     protected authService = inject(AuthService);
-    readonly loggedIn = this.authService.loggedIn;
+    readonly loggedIn = this.authService.isLoggedIn;
 
     constructor(
         // private cdr: ChangeDetectorRef
