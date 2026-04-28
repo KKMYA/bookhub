@@ -15,4 +15,6 @@ export class Endpoints {
     public static readonly createBooksApiEndpoint = 'http://localhost:9000/api/books';
     public static readonly updateBooksApiEndpoint = 'http://localhost:9000/api/books';
     public static readonly deleteBooksApiEndpoint = 'http://localhost:9000/api/books';
+
+    public static readonly getAdminApiEndpoint = 'http://localhost:9000/api/admin';
 }

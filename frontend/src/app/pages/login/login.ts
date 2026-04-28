@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Button } from "../../ui/components/button/button";
 import { Input } from "../../ui/components/input/input";
 import { PasswordInput } from "../../ui/components/input-password/input-password";
@@ -12,11 +12,11 @@ import { Router } from '@angular/router';
 })
 
 export class Login {
-    email = '';
-    password = '';
-    emailError = '';
-    passwordError = '';
-    formError = '';
+    readonly email = signal('');
+    readonly password = signal('');
+    readonly emailError = signal('');
+    readonly passwordError = signal('');
+    readonly formError = signal('');
 
     private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,28 +26,28 @@ export class Login {
     ) { }
 
     private validateForm(): boolean {
-        this.emailError = '';
-        this.passwordError = '';
-        this.formError = '';
+        this.emailError.set('');
+        this.passwordError.set('');
+        this.formError.set('');
 
-        const normalizedEmail = this.email.trim();
+        const normalizedEmail = this.email().trim();
 
         if (!normalizedEmail) {
-            this.emailError = 'Email obligatoire.';
+            this.emailError.set('Email obligatoire.');
         } else if (!this.emailRegex.test(normalizedEmail)) {
-            this.emailError = "Format de l'email invalide.";
+            this.emailError.set("Format de l'email invalide.");
         }
 
-        if (!this.password.trim()) {
-            this.passwordError = 'Mot de passe obligatoire.';
+        if (!this.password().trim()) {
+            this.passwordError.set('Mot de passe obligatoire.');
         }
 
-        this.email = normalizedEmail;
+        this.email.set(normalizedEmail);
 
-        const isValid = !this.emailError && !this.passwordError;
+        const isValid = !this.emailError() && !this.passwordError();
 
         if (!isValid) {
-            this.formError = 'Merci de corriger les champs en erreur.';
+            this.formError.set('Merci de corriger les champs en erreur.');
         }
 
         return isValid;
@@ -58,14 +58,13 @@ export class Login {
             return;
         }
 
-        this.authService.login({ email: this.email, password: this.password }).subscribe({
+        this.authService.login({ email: this.email(), password: this.password() }).subscribe({
             next: (response) => {
                 console.log('Connexion réussie !', response);
-                
                 this.router.navigate(['/']);
             },
             error: (err) => {
-                this.formError = 'Erreur de connexion : ' + (err.error?.message || 'Identifiants incorrects');
+                this.formError.set('Erreur de connexion : ' + (err.error?.message || 'Identifiants incorrects'));
             }
         });
     }
