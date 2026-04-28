@@ -1,5 +1,5 @@
 <div class="m-8 p-6 bg-white shadow-md rounded-lg">
-  <!-- <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col gap-4">
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="flex flex-col gap-4">
 
     <div class="flex gap-2">
       <div class="relative flex-grow">
@@ -47,7 +47,7 @@
           >
             <option value="">Toutes les catégories</option>
 
-            <option *ngFor="let cat of categories" [value]="cat.libelle">
+            <option *ngFor="let cat of categories()" [value]="cat.libelle">
               {{ cat.libelle }}
             </option>
           </select>
@@ -62,5 +62,5 @@
       </div>
     </div>
 
-  </form> -->
+  </form>
 </div>

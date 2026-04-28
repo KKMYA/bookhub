@@ -55,7 +55,7 @@ private route = inject(ActivatedRoute);
     }
     this.isLoading = true;
 
-    this.bookService.fetchBooksForDashboard()
+    this.bookService.fetchBooksForDashboard(page, this.pageSize)
       .subscribe({
         next: (res) => {
 

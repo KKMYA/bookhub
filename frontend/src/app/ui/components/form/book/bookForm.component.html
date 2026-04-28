@@ -1,6 +1,10 @@
-<div class="min-h-screen bg-slate-50 p-4 md:p-8">
+<div class=" flex flex-row min-h-screen bg-slate-50 p-4 md:p-8">
+  <div class="p-4 flex  items-start">
+    <button type="button"(click)="goBack()" class="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 font-bold rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-all shadow-sm active:scale-95">
+      <span class="text-blue-600">←</span> Retour au Dashboard
+    </button>
+  </div>
   <div class="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-
     <div class="bg-amber-400 p-6">
       <h2 class="text-2xl font-bold text-white flex items-center gap-3">
         <span>📖</span> Ajouter un nouveau livre
@@ -17,30 +21,46 @@
             <div class="flex flex-col gap-2 md:col-span-2">
               <label class="text-sm font-bold text-slate-700">Titre du livre *</label>
               <input type="text" formControlName="titre" placeholder="Ex: Le Seigneur des Anneaux"
+              [class.border-red-500]="bookForm.get('titre')?.invalid && bookForm.get('titre')?.touched"
                 class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
-            </div>
+            @if (bookForm.get('titre')?.invalid && bookForm.get('titre')?.touched) {
+              <span class="text-xs text-red-500 font-medium">Le titre est obligatoire.</span>
+             }
+              </div>
 
             <div class="flex flex-col gap-2">
               <label class="text-sm font-bold text-slate-700">Auteur *</label>
               <input type="text" formControlName="auteur" placeholder="J.R.R. Tolkien"
-                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+              [class.border-red-500]="bookForm.get('auteur')?.invalid && bookForm.get('auteur')?.touched"
+              class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                @if (bookForm.get('auteur')?.invalid && bookForm.get('auteur')?.touched) {
+                <span class="text-xs text-red-500 font-medium">L'auteur est obligatoire.</span>
+          }
             </div>
 
             <div class="flex flex-col gap-2">
               <label class="text-sm font-bold text-slate-700">ISBN *</label>
               <input type="text" formControlName="isbn" placeholder="13 chiffres 9780261102354"
+              [class.border-red-500]="bookForm.get('isbn')?.invalid && bookForm.get('isbn')?.touched"
                 class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+              @if (bookForm.get('isbn')?.invalid && bookForm.get('isbn')?.touched) {
+                <span class="text-xs text-red-500 font-medium">L'ISBN est obligatoire.</span>
+              }
             </div>
 
             <div class="flex flex-col gap-2">
               <label class="text-sm font-bold text-slate-700">Catégorie *</label>
               <select formControlName="categoryLibelle"
+              [class.border-red-500]="bookForm.get('categoryLibelle')?.invalid && bookForm.get('categoryLibelle')?.touched"
                 class="w-full p-3 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer">
                 <option value="" disabled>Choisir une catégorie</option>
                 @for (cat of categories; track cat.id) {
                   <option [value]="cat.libelle">{{ cat.libelle }}</option>
                 }
               </select>
+              @if (bookForm.get('categoryLibelle')?.invalid && bookForm.get('categoryLibelle')?.touched) {
+              <span class="text-xs text-red-500 font-medium">⚠️ Veuillez choisir une catégorie.</span>
+            }
             </div>
 
             <div class="flex flex-col gap-2">
@@ -58,8 +78,12 @@
             <div class="flex flex-col gap-2">
               <label class="text-sm font-bold text-slate-700">Stock Disponible</label>
               <input type="number" formControlName="nbExemplairesDisponibles"
-                class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-            </div>
+              [class.border-red-500]="bookForm.hasError('stockInconsistent') && bookForm.get('nbExemplairesDisponibles')?.touched"
+              class="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+              @if (bookForm.hasError('stockInconsistent') && bookForm.get('nbExemplairesDisponibles')?.touched) {
+                <span class="text-xs text-red-500 font-bold">Le stock disponible ne peut pas être supérieur au stock total.</span>
+              }
+              </div>
 
             <div class="flex flex-col gap-2 md:col-span-2">
               <label class="text-sm font-bold text-slate-700">Description / Résumé</label>

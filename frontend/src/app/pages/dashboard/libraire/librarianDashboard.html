@@ -20,13 +20,13 @@
           <tr>
             <th class="px-6 py-4">Titre</th>
             <th class="px-6 py-4">Auteur</th>
-            <!-- <th class="px-6 py-4">Isbn</th> -->
+            <th class="px-6 py-4">Isbn</th>
             <th class="px-6 py-4">Category</th>
-            <!-- <th class="px-6 py-4">Description</th> -->
+            <th class="px-6 py-4">Description</th>
             <th class="px-6 py-4">couverture</th>
             <th class="px-6 py-4">noteMoyenne</th>
-            <!-- <th class="px-6 py-4">nb Exemplaires</th>
-            <th class="px-6 py-4">nb Exemplaires Disponibles</th> -->
+            <th class="px-6 py-4">nb Exemplaires</th>
+            <th class="px-6 py-4">nb Exemplaires Disponibles</th>
             <th class="px-6 py-4 text-center">Actions</th>
           </tr>
         </thead>
@@ -38,9 +38,10 @@
               <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-4 font-medium text-gray-900">{{ book.titre }}</td>
                 <td class="px-6 py-4 text-gray-600">{{ book.auteur }}</td>
-                <td class="px-6 py-4">{{ book.categoryLibelle || 'N/A' }}</td>
-                <td class="px-6 py-4">{{ book.couvertureUrl || 'N/A' }}</td>
-                <td class="px-6 py-4">{{ book.noteMoyenne || 'N/A' }}</td>
+                   <td class="px-6 py-4 text-gray-600">{{ book.isbn }}</td>
+                <td class="px-6 py-4">{{ book.categoryLibelle || '' }}</td>
+                <td class="px-6 py-4">{{ book.couvertureUrl || '' }}</td>
+                <td class="px-6 py-4">{{ book.noteMoyenne || '' }}</td>
 
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-3">

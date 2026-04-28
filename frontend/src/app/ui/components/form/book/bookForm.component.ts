@@ -4,6 +4,7 @@ import { BookService } from '../../../../services/http/book/book.service';
 import { CategoryService } from '../../../../services/http/category/category.service';
 import { CategoryFilter } from '../../../../models/category.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { stockValidator } from '../../../utils/validator';
 
 
 //WIP a deplacer
@@ -37,6 +38,8 @@ export class BookFormComponent implements OnInit {
       nbExemplaires: [1, [Validators.required, Validators.min(0)]],
       nbExemplairesDisponibles: [1, [Validators.required, Validators.min(0)]],
       categoryLibelle: ['', [Validators.required]]
+    },{
+      validators: stockValidator
     });
   }
 
@@ -50,14 +53,19 @@ export class BookFormComponent implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      // OUI -> On est en mode édition
+
       this.loadBookToForm(+id);
     }
+  }
+  goBack(): void {
+    this.router.navigate(['/dashboard/librarian']);
   }
 
   loadBookToForm(id: number) {
     this.bookService.getBookById(id).subscribe({
+
       next: (book) => {
+        console.log("Livre reçu de l'API :", book);
         this.bookForm.patchValue(book);
       },
       error: () => console.error("Impossible de récupérer le livre")
@@ -81,9 +89,7 @@ export class BookFormComponent implements OnInit {
         isbn: this.bookForm.value.isbn.replace(/\s/g, ''),
           noteMoyenne: 0
         };
-        console.log("Payload à envoyer", payload);
         await this.bookService.createBook(payload);
-
         this.toast.set({ show: true, message: 'Livre enregistré !', type: 'success' });
 
         setTimeout(() => {

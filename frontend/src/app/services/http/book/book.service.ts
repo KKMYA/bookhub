@@ -1,9 +1,10 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Book, BookDto, BookHome } from "../../../models/book.model";
 import { firstValueFrom, Observable } from "rxjs";
 import { PaginatedFilesDto } from "../../../models/paginatedFiles.model";
 import { Endpoints } from "../../../constants/endpoints";
+import { SearchParams } from "../../../models/searchParam.model";
 
 
 @Injectable({
@@ -55,5 +56,22 @@ export class BookService {
       return promise;
      }
 
+     public searchBooks(filters: SearchParams, page: number = 0, size: number = 9): Observable<PaginatedFilesDto<BookHome>> {
+      let params = new HttpParams()
+        // .set('page', page.toString())
+        // .set('size', size.toString())
+                console.log('Filters envoyés au service de recherche :', filters);
+        if (filters.query) {
+          console.log("coucou filters")
+            params = params.set('searchTerm', filters.query);
+        }
+        if (filters.category) {
+            params = params.set('categoryLibelle', filters.category);
+        }
+        if (filters.isAvailable !== undefined) {
+            params = params.set('isAvailable', filters.isAvailable.toString());
+        }
+        return this.http.get<PaginatedFilesDto<BookHome>>(`${Endpoints.searchBooksApiEndpoint}?${params.toString()}`);
+    }
 
 }

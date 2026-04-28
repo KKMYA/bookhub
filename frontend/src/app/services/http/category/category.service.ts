@@ -14,8 +14,8 @@ export class CategoryService {
         private http: HttpClient
     ) { }
 
-public async fetchCategories(): Promise<CategoryFilter[]> {
-  const categories$ = this.http.get<CategoryFilter[]>(`${Endpoints.getCategoriesApiEndpoint}`);
-  return await firstValueFrom(categories$);
-}
+  public async fetchCategories(): Promise<CategoryFilter[]> {
+    const categories$ = this.http.get<CategoryFilter[]>(`${Endpoints.getCategoriesApiEndpoint}`);
+    return await firstValueFrom(categories$);
+  }
 }
