@@ -2,9 +2,9 @@ package com.eni.bookhub.security;
 
 import com.eni.bookhub.bo.Account;
 import com.eni.bookhub.bo.Role;
-import com.eni.bookhub.dto.AuthResponse;
-import com.eni.bookhub.dto.LoginRequest;
-import com.eni.bookhub.dto.RegisterRequest;
+import com.eni.bookhub.controller.dto.response.AuthResponse;
+import com.eni.bookhub.controller.dto.request.LoginRequest;
+import com.eni.bookhub.controller.dto.request.RegisterRequest;
 import com.eni.bookhub.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

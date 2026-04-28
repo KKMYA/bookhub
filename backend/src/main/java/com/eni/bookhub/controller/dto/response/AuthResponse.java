@@ -1,4 +1,4 @@
-package com.eni.bookhub.dto;
+package com.eni.bookhub.controller.dto.response;
 
 public record AuthResponse(
         String token

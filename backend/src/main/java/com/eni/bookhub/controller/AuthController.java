@@ -1,8 +1,8 @@
 package com.eni.bookhub.controller;
 
-import com.eni.bookhub.dto.AuthResponse;
-import com.eni.bookhub.dto.LoginRequest;
-import com.eni.bookhub.dto.RegisterRequest;
+import com.eni.bookhub.controller.dto.response.AuthResponse;
+import com.eni.bookhub.controller.dto.request.LoginRequest;
+import com.eni.bookhub.controller.dto.request.RegisterRequest;
 import com.eni.bookhub.security.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
