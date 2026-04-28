@@ -46,7 +46,7 @@
             </a>
 
            @if (loggedIn()) {
-                @if (authService.role=== 'LIBRARIAN') {
+                @if (authService.role=== 'LIBRARIAN' || authService.role === 'ADMIN') {
                     <app-link href="/dashboard/librarian" (click)="closeMenu()" >
                         Tableau de bord
                     </app-link>
