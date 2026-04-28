@@ -5,7 +5,6 @@
     <!-- HEADER -->
     <div class="flex flex-row justify-between">
       <div class="flex flex-row gap-4 w-2/6">
-
         <img [src]="book.couvertureUrl" [alt]="book.titre" class="w-48 h-64 object-cover">
 
         <div class="flex flex-col justify-between">
@@ -44,6 +43,7 @@
 
     <!-- COMMENTAIRES -->
     <div class="flex flex-col gap-4">
+
       <h1 class="text-2xl font-bold">
         Commentaires ({{ comments.length }})
       </h1>
@@ -54,32 +54,131 @@
         </p>
       }
 
+      <!-- FORMULAIRE COMMENTAIRE -->
+      <div class="flex flex-col gap-3 bg-gray-300 p-4 rounded-xl border border-gray-200">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold">Votre note :</span>
+
+          @for (star of [1,2,3,4,5]; track star) {
+            <lucide-angular
+              (click)="setRating(star)"
+              [img]="Star"
+              class="w-5 h-5 cursor-pointer"
+              [class.text-yellow-400]="star <= newRating"
+              [class.fill-yellow-400]="star <= newRating">
+            </lucide-angular>
+          }
+        </div>
+        <textarea
+          [(ngModel)]="newComment"
+          rows="3"
+          placeholder="Écris ton commentaire..."
+          class="w-full border rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400">
+        </textarea>
+
+        <div class="flex justify-end">
+          <button
+            type="button"
+            (click)="submitComment()"
+            [disabled]="isSubmittingComment || !newComment.trim() || newRating === 0"
+            class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg disabled:opacity-50">
+            {{ isSubmittingComment ? 'Envoi...' : 'Publier' }}
+          </button>
+
+          @if (popupService.message()) {
+            <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+              <div class="px-6 py-3 rounded-lg shadow-lg animate-popup"
+                   [ngClass]="{
+                     'bg-green-600 text-white': popupService.type() === 'success',
+                     'bg-red-600 text-white': popupService.type() === 'error',
+                     'bg-yellow-500 text-black': popupService.type() === 'warning'
+                   }">
+                {{ popupService.message() }}
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- LISTE COMMENTAIRES -->
       @for (rating of comments; track rating.idRating) {
-        <article class="flex flex-col rounded-xl bg-gray-100 p-4 gap-3">
+        <article class="flex flex-col rounded-xl bg-gray-300 p-4 gap-3">
 
           <div class="flex items-center justify-between">
-
-            <p class="font-semibold">{{ rating.firstName }} {{ rating.lastName?.charAt(0) }}.</p>
-
+            <p class="font-semibold">
+              {{ rating.firstName }} {{ rating.lastName?.charAt(0) }}., le {{ rating.datePublication | date:'EEEE d MMMM yyyy' }}
+            </p>
             <div class="flex items-center gap-2">
               <p>{{ rating.note }}</p>
               <lucide-angular [img]="Star" class="size-4 text-yellow-400 fill-yellow-400"></lucide-angular>
             </div>
-
           </div>
 
-          <p class="text-gray-700">{{ rating.commentaire }}</p>
+          <!-- 🔥 EDITION INLINE -->
+          @if (editingRatingId === rating.idRating) {
+            <div class="flex flex-col gap-3">
 
-          <small class="text-gray-500">
-            {{ rating.datePublication | date:'short' }}
-          </small>
+              <div class="flex items-center gap-2">
+                <span class="font-semibold">Nouvelle note :</span>
+                @for (star of [1,2,3,4,5]; track star) {
+                  <lucide-angular
+                    (click)="editRating = star"
+                    [img]="Star"
+                    class="w-5 h-5 cursor-pointer"
+                    [class.text-yellow-400]="star <= editRating"
+                    [class.fill-yellow-400]="star <= editRating">
+                  </lucide-angular>
+                }
+              </div>
+              <textarea
+                [(ngModel)]="editComment"
+                rows="3"
+                class="w-full border rounded-lg p-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400">
+              </textarea>
 
+              <div class="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  (click)="cancelEdit()"
+                  class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-xl font-medium transition shadow-sm">
+                  Annuler
+                </button>
+
+                <button
+                  type="button"
+                  (click)="confirmEdit(rating.idRating)"
+                  [disabled]="!editComment.trim() || editRating === 0"
+                  class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-xl font-medium transition shadow-sm disabled:opacity-50">
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+
+          } @else {
+            <p class="text-gray-700">{{ rating.commentaire }}</p>
+          }
+
+          <!-- ACTIONS -->
+          @if (rating.idAccount === currentUserId && editingRatingId !== rating.idRating) {
+            <div class="flex gap-3 mt-3">
+              <button
+                type="button"
+                (click)="onEditRating(rating)"
+                class="bg-orange-400 hover:bg-orange-500 text-white px-5 py-2 rounded-xl font-medium transition shadow-sm">
+                Modifier
+              </button>
+              <button
+                type="button"
+                (click)="onDeleteRating(rating.idRating)"
+                class="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-xl font-medium transition shadow-sm">
+                Supprimer
+              </button>
+            </div>
+          }
         </article>
       }
     </div>
-
   </div>
-
 } @else {
   <p class="text-center text-gray-600">Livre non trouvé.</p>
 }

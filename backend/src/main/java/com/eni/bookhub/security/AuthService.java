@@ -38,7 +38,7 @@ public class AuthService {
 
         repository.save(account);
 
-        var jwtToken = jwtService.generateToken(account, account.getRole().name());
+        var jwtToken = jwtService.generateToken(account, account.getRole().name(), account.getIdAccount());
         return new AuthResponse(jwtToken);
     }
 
@@ -53,7 +53,7 @@ public class AuthService {
         var account = repository.findByEmail(request.email())
                 .orElseThrow();
 
-        var jwtToken = jwtService.generateToken(account, account.getRole().name());
+        var jwtToken = jwtService.generateToken(account, account.getRole().name(), account.getIdAccount());
         return new AuthResponse(jwtToken);
     }
 }

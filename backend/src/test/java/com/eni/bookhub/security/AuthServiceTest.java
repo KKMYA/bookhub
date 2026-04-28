@@ -39,8 +39,10 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         mockAccount = Account.builder()
+                .idAccount(1L)
                 .nom("Doe").prenom("John").email("john.doe@example.com")
-                .password("hashed_password").role(Role.USER).build();
+                .password("hashed_password").role(Role.USER)
+                .build();
     }
 
     @Test
@@ -50,7 +52,7 @@ class AuthServiceTest {
         RegisterRequest request = new RegisterRequest("Doe", "John", "john.doe@example.com", "0102030405", "password123");
         when(repository.findByEmail(request.email())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(request.password())).thenReturn("hashed_password");
-        when(jwtService.generateToken(any(Account.class), eq(Role.USER.name()))).thenReturn("mocked_token");
+        when(jwtService.generateToken(any(Account.class), eq(Role.USER.name()), anyLong())).thenReturn("mocked_token");
 
         // Act
         AuthResponse response = authService.register(request);
@@ -80,7 +82,7 @@ class AuthServiceTest {
         // Arrange
         LoginRequest request = new LoginRequest("john.doe@example.com", "password123");
         when(repository.findByEmail(request.email())).thenReturn(Optional.of(mockAccount));
-        when(jwtService.generateToken(mockAccount, Role.USER.name())).thenReturn("mocked_token");
+        when(jwtService.generateToken(mockAccount, Role.USER.name(), anyLong())).thenReturn("mocked_token");
 
         // Act
         AuthResponse response = authService.login(request);
@@ -102,6 +104,6 @@ class AuthServiceTest {
 
         // Vérification que l'authentification a bien été tentée
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtService, never()).generateToken(any(Account.class), anyString());
+        verify(jwtService, never()).generateToken(any(Account.class), anyString(), anyLong());
     }
 }

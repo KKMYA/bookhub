@@ -3,7 +3,6 @@ package com.eni.bookhub.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +33,10 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails, String role) {
+    public String generateToken(UserDetails userDetails, String role, Long userId) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", role);
+        extraClaims.put("userId", userId);
         return generateToken(extraClaims, userDetails);
     }
 

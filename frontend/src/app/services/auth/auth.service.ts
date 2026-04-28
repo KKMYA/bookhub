@@ -75,4 +75,19 @@ export class AuthService {
         this.syncLoggedInState();
         return this.loggedIn();
     }
+
+  getUserId(): number | null {
+    if (!this.isBrowser) return null;
+
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.userId ?? null;
+    } catch (e) {
+      console.error('Erreur décodage token', e);
+      return null;
+    }
+  }
 }

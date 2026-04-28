@@ -1,0 +1,39 @@
+@if (confirmDialog.dialog(); as dialog) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl p-6 w-96 shadow-xl animate-popup">
+
+      <h2 class="text-xl font-bold mb-4">
+        {{ dialog.title }}
+      </h2>
+
+      <p class="text-gray-600 mb-6">
+        {{ dialog.message }}
+      </p>
+
+      <div class="flex justify-end gap-3">
+
+        <button
+          type="button"
+          (click)="confirmDialog.close()"
+          class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300">
+          {{ dialog.cancelText }}
+        </button>
+
+        <button
+          type="button"
+          (click)="confirmDialog.confirm()"
+          class="px-4 py-2 rounded-xl text-white"
+          [ngClass]="{
+            'bg-red-600 hover:bg-red-700': dialog.type === 'danger',
+            'bg-yellow-500 hover:bg-yellow-600': dialog.type === 'warning',
+            'bg-blue-600 hover:bg-blue-700': dialog.type === 'info'
+          }">
+          {{ dialog.confirmText }}
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+}

@@ -5,7 +5,7 @@ export interface Rating {
   datePublication: string;
   moderation: boolean;
   idBook: number;
-  idUser: number;
+  idAccount: number;
   firstName: string;
   lastName: string;
 }
