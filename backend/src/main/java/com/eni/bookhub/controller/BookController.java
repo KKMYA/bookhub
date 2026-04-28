@@ -3,9 +3,9 @@ package com.eni.bookhub.controller;
 import com.eni.bookhub.bll.BookService;
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
-import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
 import com.eni.bookhub.exception.BookhubException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,8 +26,10 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
 
     private final BookService bookService;
+
     /**
      * Read - Get all books
+     *
      * @return - An Iterable object of Book full filled
      */
     @GetMapping()
@@ -53,6 +54,28 @@ public class BookController {
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
 
+    /**
+     * Recherche
+     *
+     * @return a new book dto
+     */
+    @GetMapping("/search")
+    @Operation(
+            tags = "Bookhub",
+            summary = "Recherche d'un livre",
+            description = "recherche d'un livre",
+            security = @SecurityRequirement(name = "bearer_key")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success for create book "),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
+    public ResponseEntity<PaginatedFilesDto> search(@ModelAttribute BookSearchDto bookSearchDto,
+                                                    @PageableDefault(page = 0, size = 9) Pageable pageable) {
+        PaginatedFilesDto<BookSumaryDto> result = bookService.searchBooks(bookSearchDto, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/dashboard")
     @CrossOrigin(origins = "http://localhost:4200")
 //    @PreAuthorize("hasRole('LIBRARIAN')")
@@ -65,6 +88,7 @@ public class BookController {
         }
         return new ResponseEntity<>(allBooks, HttpStatus.OK);
     }
+
     /**
      * Suppression d'un livre
      *
@@ -113,8 +137,10 @@ public class BookController {
         result = bookService.createBook(bookDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
     /**
      * Find one Book by ID
+     *
      * @return bookDto
      */
     @Operation(summary = "Récupérer un livre par son ID",
@@ -137,6 +163,7 @@ public class BookController {
 
     /**
      * Update Book
+     *
      * @param bookDto
      * @return updating book dto
      */
@@ -152,33 +179,11 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<BookDto> update(@Valid @RequestBody BookDto bookDto) {
-        try{
+        try {
             bookService.updateBook(bookDto);
-        }catch (BookhubException e){
+        } catch (BookhubException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(bookDto, HttpStatus.OK);
     }
-
-    /**
-     * Recherche
-     * @return a new book dto
-     */
-    @PostMapping("/search")
-    @Operation(
-            tags = "Bookhub",
-            summary = "Recherche d'un livre",
-            description = "recherche d'un livre",
-            security = @SecurityRequirement(name = "bearer_key")
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success for create book "),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error")
-    })
-    public ResponseEntity<PaginatedFilesDto> search(@RequestBody BookSearchDto bookSearchDto,
-      @PageableDefault(page = 0, size = 9) Pageable pageable) {
-        PaginatedFilesDto<BookSumaryDto> result = bookService.searchBooks(bookSearchDto,pageable);
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
 }

@@ -17,7 +17,7 @@ public record BookDto(
         String auteur,
 
         @NotBlank(message = "L'ISBN est obligatoire")
-        @Pattern(regexp = "^(978|979)?\\d{10}(\\d{3})?$", message = "Format ISBN invalide (doit être ISBN-10 ou ISBN-13)")
+        @Pattern(regexp = "^\\d{10}(\\d{3})?$", message = "Format ISBN invalide (doit être ISBN-10 ou ISBN-13)")
         String isbn,
 
         @Min(value = 0, message = "La note ne peut pas être inférieure à 0")

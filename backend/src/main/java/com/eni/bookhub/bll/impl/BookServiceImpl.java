@@ -122,13 +122,14 @@ public class BookServiceImpl implements BookService {
      * Pour la recherche
      */
     public PaginatedFilesDto<BookSumaryDto> searchBooks(BookSearchDto searchDto, Pageable pageable) {
+        String searchTerm = (searchDto.searchTerm() == null || searchDto.searchTerm().isBlank())
+                ? null : searchDto.searchTerm();
 
-        Page<Book> bookPage = bookRepository.searchBooks(
-                searchDto.searchTerm(),
-                searchDto.categoryLibelle(),
-                searchDto.isAvailable(),
-                pageable
-        );
+        String category = (searchDto.categoryLibelle() == null || searchDto.categoryLibelle().isBlank())
+                ? null : searchDto.categoryLibelle();
+        Boolean isAvailable = (searchDto.isAvailable() == null || !searchDto.isAvailable())
+                ? null : true;
+        Page<Book> bookPage = bookRepository.searchBooks(searchTerm, category, isAvailable, pageable);
         List<BookSumaryDto> dtos = bookPage.getContent().stream()
                 .map(bookMapper::bookEntityToBookSumaryDto)
                 .toList();
