@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Reservation } from '../../models/reservation.model';
 import { ReservationService } from '../../services/http/reservation/reservation.service';
@@ -5,7 +6,7 @@ import { LucideAngularModule } from "lucide-angular";
 
 @Component({
     selector: 'app-reservations',
-    imports: [LucideAngularModule],
+    imports: [CommonModule, LucideAngularModule],
     templateUrl: './reservations.html'
 })
 
@@ -14,6 +15,8 @@ export class Reservations implements OnInit {
     private reservationService = inject(ReservationService);
 
     reservations: Reservation[] = [];
+    allReservations: Reservation[] = [];
+    loans: any[] = [];
     loading: boolean = true;
     errorMessage: string | null = null;
 
@@ -27,17 +30,28 @@ export class Reservations implements OnInit {
 
         this.reservationService.getMyReservations().subscribe({
             next: (reservations) => {
-                this.reservations = reservations;
+                this.allReservations = reservations;
+                this.reservations = reservations.filter(r => r.statut !== 'AVAILABLE');
             },
             error: (error) => {
                 const backendMessage = typeof error?.error === 'string' ? error.error : null;
                 this.errorMessage = backendMessage ?? 'Impossible de charger vos reservations.';
                 this.reservations = [];
+                this.allReservations = [];
             },
             complete: () => {
                 this.loading = false;
-
                 this.cdr.detectChanges();
+            }
+        });
+
+        this.reservationService.getMyLoans().subscribe({
+            next: (loans) => {
+                this.loans = loans;
+            },
+            error: (error) => {
+                console.error('Erreur lors du chargement des emprunts:', error);
+                this.loans = [];
             }
         });
     }
@@ -75,6 +89,10 @@ export class Reservations implements OnInit {
             default:
                 return status;
         }
+    }
+
+    getReservationByBook(bookId: number): Reservation | undefined {
+        return this.allReservations.find(r => r.idBook === bookId);
     }
 
 }

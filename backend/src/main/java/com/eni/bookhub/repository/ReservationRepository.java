@@ -14,6 +14,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByAccountIdAccountOrderByDateReservationDesc(Long idAccount);
 
+    List<Reservation> findByStatutOrderByDateReservationDesc(String statut);
+
     List<Reservation> findByBookIdBookOrderByRangFileAttenteAsc(Integer idBook);
 
     boolean existsByBookIdBookAndAccountIdAccountAndStatutIn(
@@ -24,4 +26,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT COALESCE(MAX(r.rangFileAttente), 0) FROM Reservation r WHERE r.book.idBook = :idBook")
     Integer findMaxQueueRankByBookId(@Param("idBook") Integer idBook);
+
+    Reservation findByBookIdBookAndStatutAndAccountIdAccount(Integer idBook, String statut, Long idAccount);
 }

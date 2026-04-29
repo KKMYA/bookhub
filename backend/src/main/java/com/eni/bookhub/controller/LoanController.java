@@ -3,6 +3,7 @@ package com.eni.bookhub.controller;
 import com.eni.bookhub.bll.LoanService;
 import com.eni.bookhub.controller.dto.response.LoanDto;
 import com.eni.bookhub.exception.BookhubException;
+import com.eni.bookhub.exception.EntityNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,8 +59,10 @@ public class LoanController {
         LoanDto loanDto;
         try {
             loanDto = loanService.findLoanById(id);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         } catch (BookhubException e) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.badRequest().build();
         }
         return new ResponseEntity<>(loanDto, HttpStatus.OK);
     }
@@ -72,5 +76,68 @@ public class LoanController {
     public ResponseEntity<LoanDto> create(@RequestBody LoanDto loanDto) {
         LoanDto result = loanService.createLoan(loanDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "Mes emprunts", description = "Récupération des emprunts actifs de l'utilisateur")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des emprunts"),
+            @ApiResponse(responseCode = "204", description = "No content"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
+    public ResponseEntity<Iterable<LoanDto>> getMyLoans(@org.springframework.security.core.annotation.AuthenticationPrincipal com.eni.bookhub.bo.Account account) {
+        List<LoanDto> loans = loanService.getMyLoans(account.getIdAccount());
+        if (loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loans);
+    }
+
+    @GetMapping("/returned")
+    @Operation(summary = "Emprunts retournés", description = "Récupération des emprunts retournés (pour les libraires)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des emprunts retournés"),
+            @ApiResponse(responseCode = "204", description = "No content"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
+    public ResponseEntity<Iterable<LoanDto>> getReturnedLoans() {
+        List<LoanDto> loans = loanService.getReturnedLoans();
+        if (loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loans);
+    }
+
+    @GetMapping("/active")
+    @Operation(summary = "Emprunts actifs", description = "Récupération de tous les emprunts actifs (pour les libraires)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des emprunts actifs"),
+            @ApiResponse(responseCode = "204", description = "No content"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
+    public ResponseEntity<Iterable<LoanDto>> getActiveLoans() {
+        List<LoanDto> loans = loanService.getActiveLoans();
+        if (loans.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(loans);
+    }
+
+    @PatchMapping("/{id}/mark-as-returned")
+    @Operation(summary = "Marquer un emprunt comme retourné", description = "Change le statut d'un emprunt de ACTIVE à RETURNED")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Emprunt marqué comme retourné"),
+            @ApiResponse(responseCode = "404", description = "Emprunt non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
+    public ResponseEntity<LoanDto> markAsReturned(@PathVariable Long id) {
+        try {
+            LoanDto loanDto = loanService.markAsReturned(id);
+            return ResponseEntity.ok(loanDto);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (BookhubException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

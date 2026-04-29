@@ -16,6 +16,8 @@ public record LoanDto(
 
         Integer idBook,
 
-        Integer idAccount
+        Integer idAccount,
+
+        BookSumaryDto book
 ) {
 }

@@ -9,6 +9,8 @@ export class Endpoints {
 
     public static readonly getReservationsApiEndpoint = 'http://localhost:9000/api/reservations';
 
+    public static readonly getLoansApiEndpoint = 'http://localhost:9000/api/loans';
+
     public static readonly getAccountApiEndpoint = 'http://localhost:9000/api/account';
     public static readonly searchBooksApiEndpoint = 'http://localhost:9000/api/books/search';
 

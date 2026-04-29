@@ -11,4 +11,12 @@ public interface LoanService {
     LoanDto findLoanById(int id);
 
     LoanDto createLoan(LoanDto loanDto);
+
+    List<LoanDto> getMyLoans(Long idAccount);
+
+    List<LoanDto> getReturnedLoans();
+
+    List<LoanDto> getActiveLoans();
+
+    LoanDto markAsReturned(Long idLoan);
 }

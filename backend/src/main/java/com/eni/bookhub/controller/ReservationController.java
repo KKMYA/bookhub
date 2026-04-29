@@ -34,6 +34,15 @@ public class ReservationController {
         return ResponseEntity.ok(reservations);
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<List<ReservationDto>> getPendingReservations() {
+        List<ReservationDto> reservations = reservationService.getPendingReservations();
+        if (reservations.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(reservations);
+    }
+
     @PostMapping
     public ResponseEntity<ReservationDto> createReservation(
             @AuthenticationPrincipal Account account,
@@ -50,5 +59,17 @@ public class ReservationController {
     ) {
         ReservationDto cancelledReservation = reservationService.cancelReservation(account.getIdAccount(), idReservation);
         return ResponseEntity.ok(cancelledReservation);
+    }
+
+    @PatchMapping("/{id}/validate")
+    public ResponseEntity<ReservationDto> validateReservation(@PathVariable("id") Long idReservation) {
+        ReservationDto validatedReservation = reservationService.validateReservation(idReservation);
+        return ResponseEntity.ok(validatedReservation);
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<ReservationDto> completeReservation(@PathVariable("id") Long idReservation) {
+        ReservationDto completedReservation = reservationService.completeReservation(idReservation);
+        return ResponseEntity.ok(completedReservation);
     }
 }

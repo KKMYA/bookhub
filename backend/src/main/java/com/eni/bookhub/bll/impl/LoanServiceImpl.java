@@ -10,7 +10,9 @@ import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -46,6 +48,46 @@ public class LoanServiceImpl implements LoanService {
         }
 
         Loan loan = loanMapper.loanDtoToLoanEntity(loanDto);
+        Loan savedLoan = loanRepository.save(loan);
+        return loanMapper.loanEntityToLoanDto(savedLoan);
+    }
+
+    @Override
+    public List<LoanDto> getMyLoans(Long idAccount) {
+        return loanRepository.findByIdAccountAndStatut(idAccount.intValue(), "ACTIVE")
+                .stream()
+                .map(loanMapper::loanEntityToLoanDto)
+                .toList();
+    }
+
+    @Override
+    public List<LoanDto> getReturnedLoans() {
+        return loanRepository.findByStatutOrderByDateRetourEffectiveDesc("RETURNED")
+                .stream()
+                .map(loanMapper::loanEntityToLoanDto)
+                .toList();
+    }
+
+    @Override
+    public List<LoanDto> getActiveLoans() {
+        return loanRepository.findByStatutOrderByDateRetourEffectiveDesc("ACTIVE")
+                .stream()
+                .map(loanMapper::loanEntityToLoanDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public LoanDto markAsReturned(Long idLoan) {
+        Loan loan = loanRepository.findById(Math.toIntExact(idLoan))
+                .orElseThrow(() -> new EntityNotFoundException("L'emprunt avec l'id " + idLoan + " est introuvable."));
+
+        if (!"ACTIVE".equals(loan.getStatut())) {
+            throw new BookhubException("Seuls les emprunts ACTIVE peuvent être marqués comme retournés.");
+        }
+
+        loan.setStatut("RETURNED");
+        loan.setDateRetourEffective(LocalDate.now());
         Loan savedLoan = loanRepository.save(loan);
         return loanMapper.loanEntityToLoanDto(savedLoan);
     }

@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Integer> {
+
+    java.util.List<Loan> findByIdAccountAndStatut(Integer idAccount, String statut);
+
+    java.util.List<Loan> findByStatutOrderByDateRetourEffectiveDesc(String statut);
 }
