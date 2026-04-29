@@ -12,9 +12,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -35,6 +35,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/books/**").permitAll()
                         .requestMatchers("/api/ratings/**").permitAll()
+                        .requestMatchers("/api/books").permitAll()
+                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN")
+//                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("LIBRARIAN")
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("LIBRARIAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasAnyRole("LIBRARIAN")
+
+                        .requestMatchers("/api/books/dashboard/**").hasAnyRole("LIBRARIAN", "ADMIN")
+
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 

@@ -2,40 +2,61 @@
     <h1 class="font-bold text-2xl mt-4">Créer un compte</h1>
 
     <form class="flex flex-col items-center justify-center gap-4 w-full p-4 md:w-1/2 lg:w-1/3" (submit)="$event.preventDefault(); onRegister()">
+        @if (formError()) {
+            <p class="text-sm text-red-500 text-center w-full">{{ formError() }}</p>
+        }
 
         <div class="flex flex-col justify-center w-full">
             <label for="lastName">Nom</label>
-            <app-input id="lastName" type="text" autocomplete="family-name" placeholder="Votre nom" (valueChange)="nom = $event"></app-input>
+            <app-input id="lastName" type="text" autocomplete="family-name" placeholder="Votre nom" (valueChange)="nom.set($event)"></app-input>
+            @if (nomError()) {
+                <p class="text-xs text-red-500 mt-1">{{ nomError() }}</p>
+            }
         </div>
 
 
         <div class="flex flex-col justify-center w-full">
             <label for="firstName">Prénom</label>
-            <app-input id="firstName" type="text" autocomplete="given-name" placeholder="Votre prénom" (valueChange)="prenom = $event"></app-input>
+            <app-input id="firstName" type="text" autocomplete="given-name" placeholder="Votre prénom" (valueChange)="prenom.set($event)"></app-input>
+            @if (prenomError()) {
+                <p class="text-xs text-red-500 mt-1">{{ prenomError() }}</p>
+            }
         </div>
 
 
         <div class="flex flex-col justify-center w-full">
             <label for="phone">Numéro de téléphone</label>
-            <app-input id="phone" type="tel" autocomplete="tel" placeholder="Votre numéro de téléphone" (valueChange)="telephone = $event"></app-input>
+            <app-input id="phone" type="tel" autocomplete="tel" placeholder="Votre numéro de téléphone" (valueChange)="telephone.set($event)"></app-input>
+            @if (telephoneError()) {
+                <p class="text-xs text-red-500 mt-1">{{ telephoneError() }}</p>
+            }
         </div>
 
         <div class="flex flex-col justify-center w-full">
             <label for="email">Adresse email</label>
-            <app-input id="email" type="email" autocomplete="email" placeholder="Adresse email" (valueChange)="email = $event"></app-input>
+            <app-input id="email" type="email" autocomplete="email" placeholder="Adresse email" (valueChange)="email.set($event)"></app-input>
+            @if (emailError()) {
+                <p class="text-xs text-red-500 mt-1">{{ emailError() }}</p>
+            }
         </div>
 
         <div class="flex flex-col justify-center w-full">
             <label for="password">Mot de passe</label>
             <app-input-password id="password" autocomplete="new-password"
-                placeholder="Mot de passe" (valueChange)="password = $event"></app-input-password>
+                placeholder="Mot de passe" (valueChange)="password.set($event)"></app-input-password>
+            @if (passwordError()) {
+                <p class="text-xs text-red-500 mt-1">{{ passwordError() }}</p>
+            }
 
         </div>
 
         <div class="flex flex-col justify-center w-full">
             <label for="confirmPassword">Confirmer le mot de passe</label>
             <app-input-password id="confirmPassword" autocomplete="new-password"
-                placeholder="Confirmer le mot de passe" (valueChange)="confirmPassword = $event"></app-input-password>
+                placeholder="Confirmer le mot de passe" (valueChange)="confirmPassword.set($event)"></app-input-password>
+            @if (confirmPasswordError()) {
+                <p class="text-xs text-red-500 mt-1">{{ confirmPasswordError() }}</p>
+            }
         </div>
 
         <div class="flex flex-col justify-between w-full">

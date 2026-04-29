@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class Header {
     readonly MenuIcon = MenuIcon
     readonly menuOpen = signal(false);
-    private readonly authService = inject(AuthService);
+    protected authService = inject(AuthService);
     readonly loggedIn = this.authService.loggedIn;
 
     constructor(

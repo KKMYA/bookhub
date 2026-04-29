@@ -1,0 +1,96 @@
+<div class="flex flex-col items-center justify-center gap-8">
+  <h1 class="font-bold text-2xl mt-4">Mon compte</h1>
+
+  <div class="flex flex-col items-center justify-center gap-6 w-full p-4 md:w-1/2 lg:w-1/3">
+
+    @if (successMessage) {
+      <p class="text-green-600 text-sm text-center w-full">{{ successMessage }}</p>
+    }
+    @if (errorMessage) {
+      <p class="text-red-500 text-sm text-center w-full">{{ errorMessage }}</p>
+    }
+
+    <div class="flex flex-col w-full gap-4">
+      <div class="flex flex-col justify-center w-full">
+        <label for="nom">Nom</label>
+        <app-input id="nom" type="text" [(value)]="account.nom"></app-input>
+      </div>
+
+      <div class="flex flex-col justify-center w-full">
+        <label for="prenom">Prénom</label>
+        <app-input id="prenom" type="text" [(value)]="account.prenom"></app-input>
+      </div>
+
+      <div class="flex flex-col justify-center w-full">
+        <label for="telephone">Numéro de téléphone</label>
+        <app-input id="telephone" type="tel" [(value)]="account.telephone"></app-input>
+      </div>
+
+      <app-button class="w-full" (click)="onUpdateInfo()">
+        Modifier les informations
+      </app-button>
+    </div>
+
+    <hr class="w-full border-gray-200" />
+
+    <div class="flex flex-col w-full gap-4">
+      <div class="flex flex-col justify-center w-full">
+        <label for="email">Email</label>
+        <app-input id="email" type="email" autocomplete="email" [(value)]="account.email"></app-input>
+      </div>
+
+      <app-button class="w-full" (click)="onUpdateEmail()">
+        Modifier l'adresse mail
+      </app-button>
+    </div>
+
+    <hr class="w-full border-gray-200" />
+
+    <div class="flex flex-col w-full gap-4">
+      <p class="font-semibold">Mot de passe</p>
+
+      <app-button class="w-full" (click)="openPasswordModal()">
+        Modifier le mot de passe
+      </app-button>
+    </div>
+
+  </div>
+</div>
+
+@if (showPasswordModal) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full mx-4 md:w-1/3 flex flex-col gap-4">
+
+      <h2 class="font-bold text-xl text-center">Modifier le mot de passe</h2>
+
+      @if (passwordError) {
+        <p class="text-red-500 text-sm text-center">{{ passwordError }}</p>
+      }
+
+      <div class="flex flex-col gap-1">
+        <label for="oldPassword">Ancien mot de passe</label>
+        <app-input-password id="oldPassword" autocomplete="current-password" placeholder="Ancien mot de passe" (valueChange)="oldPassword = $event"></app-input-password>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="newPassword">Nouveau mot de passe</label>
+        <app-input-password id="newPassword" autocomplete="new-password" placeholder="Nouveau mot de passe" (valueChange)="newPassword = $event"></app-input-password>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <app-input-password id="confirmPassword" autocomplete="new-password" placeholder="Confirmer le mot de passe" (valueChange)="confirmPassword = $event"></app-input-password>
+      </div>
+
+      <div class="flex flex-col gap-2 mt-2">
+        <app-button class="w-full" (click)="onUpdatePassword()">
+          Confirmer
+        </app-button>
+        <button class="text-sm text-center text-gray-500 hover:underline mt-1" (click)="closePasswordModal()">
+          Annuler
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

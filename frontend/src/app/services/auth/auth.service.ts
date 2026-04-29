@@ -14,16 +14,39 @@ import { Endpoints } from '../../constants/endpoints';
 export class AuthService {
     private readonly platformId = inject(PLATFORM_ID);
     private readonly isBrowser = isPlatformBrowser(this.platformId);
-    private readonly _loggedIn = signal<boolean>(false);
+    private readonly _loggedIn = signal<boolean | null>(null);
+    private _role: string | null = null;
+
+
+    readonly loggedIn = this._loggedIn.asReadonly();
+
+    public get isLoggedIn(): boolean {
+        return this.syncLoggedInState();
+    }
 
     constructor(private http: HttpClient) {
         this.syncLoggedInState();
     }
 
-    readonly loggedIn = this._loggedIn.asReadonly();
+    public get role(): string | null {
+        if (!this._loggedIn()) return null;
 
-    private syncLoggedInState(): void {
-        this._loggedIn.set(this.isBrowser && !!localStorage.getItem('token'));
+        if (!this._role) {
+            const token = localStorage.getItem('token') ?? '';
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            this._role = payload.role || payload.roles || payload.authorities || null;
+        }
+        return this._role;
+    }
+
+    private syncLoggedInState(): boolean {
+        if (!this.isBrowser) {
+            return false;
+        }
+
+        const isLoggedIn = !!localStorage.getItem('token');
+        this._loggedIn.set(isLoggedIn);
+        return isLoggedIn;
     }
 
     private setToken(token: string): void {
@@ -31,6 +54,7 @@ export class AuthService {
             return;
         }
 
+        this._role = null;
         localStorage.setItem('token', token);
         this.syncLoggedInState();
     }
@@ -40,6 +64,7 @@ export class AuthService {
             return;
         }
 
+        this._role = null;
         localStorage.removeItem('token');
         this.syncLoggedInState();
     }
@@ -70,11 +95,6 @@ export class AuthService {
         this.clearToken();
     }
 
-    // Savoir si l'utilisateur est connecté
-    isLoggedIn(): boolean {
-        this.syncLoggedInState();
-        return this.loggedIn();
-    }
 
   getUserId(): number | null {
     if (!this.isBrowser) return null;
