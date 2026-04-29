@@ -10,4 +10,6 @@ public interface ReservationService {
     List<ReservationDto> getReservationsByAccount(Long idAccount);
 
     ReservationDto createReservation(Long idAccount, CreateReservationRequestDto request);
+
+    ReservationDto cancelReservation(Long idAccount, Long idReservation);
 }

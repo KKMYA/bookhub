@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +41,14 @@ public class ReservationController {
     ) {
         ReservationDto createdReservation = reservationService.createReservation(account.getIdAccount(), request);
         return ResponseEntity.ok(createdReservation);
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ReservationDto> cancelReservation(
+            @AuthenticationPrincipal Account account,
+            @PathVariable("id") Long idReservation
+    ) {
+        ReservationDto cancelledReservation = reservationService.cancelReservation(account.getIdAccount(), idReservation);
+        return ResponseEntity.ok(cancelledReservation);
     }
 }

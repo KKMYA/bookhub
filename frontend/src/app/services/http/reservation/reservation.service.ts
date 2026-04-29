@@ -21,4 +21,8 @@ export class ReservationService {
         const payload: CreateReservationRequest = { idBook };
         return this.http.post<Reservation>(Endpoints.getReservationsApiEndpoint, payload);
     }
+
+    cancelReservation(idReservation: number): Observable<Reservation> {
+        return this.http.patch<Reservation>(`${Endpoints.getReservationsApiEndpoint}/${idReservation}/cancel`, {});
+    }
 }

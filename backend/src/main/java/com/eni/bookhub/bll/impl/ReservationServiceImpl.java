@@ -43,7 +43,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-        public ReservationDto createReservation(Long idAccount, CreateReservationRequestDto request) {
+    public ReservationDto createReservation(Long idAccount, CreateReservationRequestDto request) {
         Book book = bookRepository.findById(request.idBook())
                 .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'id " + request.idBook() + " est introuvable."));
 
@@ -68,6 +68,25 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setBook(book);
         reservation.setAccount(account);
 
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return reservationMapper.reservationEntityToReservationDto(savedReservation);
+    }
+
+    @Override
+    @Transactional
+    public ReservationDto cancelReservation(Long idAccount, Long idReservation) {
+        Reservation reservation = reservationRepository.findById(idReservation)
+                .orElseThrow(() -> new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable."));
+
+        if (!reservation.getAccount().getIdAccount().equals(idAccount)) {
+            throw new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable.");
+        }
+
+        if ("CANCELLED".equals(reservation.getStatut())) {
+            return reservationMapper.reservationEntityToReservationDto(reservation);
+        }
+
+        reservation.setStatut("CANCELLED");
         Reservation savedReservation = reservationRepository.save(reservation);
         return reservationMapper.reservationEntityToReservationDto(savedReservation);
     }
