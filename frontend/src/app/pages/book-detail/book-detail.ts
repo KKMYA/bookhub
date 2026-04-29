@@ -14,12 +14,14 @@ import { UpdateRatingDto } from '../../models/update-rating.dto';
 import { PopupService } from '../../services/ui-ux/popup.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { ConfirmDialogService } from '../../services/ui-ux/confirm-dialog.service';
+import { ReservationService } from '../../services/http/reservation/reservation.service';
+import { BookComment } from '../../models/comment.model';
 
 @Component({
   selector: 'app-book-detail',
   standalone: true,
-  imports: [Button, LucideAngularModule, DatePipe, FormsModule],
-  templateUrl: './book-detail.html',
+  imports: [Button, LucideAngularModule, DatePipe, FormsModule, NgClass],
+  templateUrl: './book-detail.html'
 })
 export class BookDetail implements OnInit {
   // Services Angular et applicatifs
@@ -29,6 +31,7 @@ export class BookDetail implements OnInit {
   private ratingService = inject(RatingService);
   private authService = inject(AuthService);
   private confirmDialog = inject(ConfirmDialogService);
+  private reservationService = inject(ReservationService);
 
   // Service exposé au template pour afficher les popups
   protected popupService = inject(PopupService);
@@ -42,7 +45,10 @@ export class BookDetail implements OnInit {
   // Livre affiché
   book: Book | null = null;
   bookId: number | null = null;
+  reserveLoading: boolean = false;
+  hasActiveReservation: boolean = false;
 
+  // Variables concernant les commentaires
   // Commentaires affichés
   comments: Rating[] = [];
 
@@ -83,6 +89,8 @@ export class BookDetail implements OnInit {
 
     this.bookService.getBookById(id).subscribe({
       next: (response) => {
+        this.hasActiveReservation = response.hasActiveReservation ?? false;
+
         this.book = response;
       },
       error: (error) => {
@@ -91,7 +99,7 @@ export class BookDetail implements OnInit {
       },
       complete: () => {
         this.cdr.detectChanges();
-      },
+      }
     });
 
     this.loadRatings(0);
@@ -123,6 +131,36 @@ export class BookDetail implements OnInit {
         console.error(error);
         this.comments = [];
         this.isLoadingRatings = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  reserveBook(): void {
+    if (this.bookId === null) return;
+
+    if (this.book?.hasActiveReservation) {
+      alert('Vous avez déjà une réservation active pour ce livre.');
+
+      return;
+    }
+
+    this.reserveLoading = true;
+
+    this.reservationService.createReservation(this.bookId).subscribe({
+      next: () => {
+        alert('Réservation réussie !');
+
+        this.hasActiveReservation = true;
+      },
+      error: (error) => {
+        console.error('Erreur lors de la réservation :', error);
+
+        alert('Erreur lors de la réservation. Veuillez réessayer plus tard.');
+      },
+      complete: () => {
+        this.reserveLoading = false;
+
         this.cdr.detectChanges();
       }
     });
@@ -237,6 +275,14 @@ export class BookDetail implements OnInit {
 
     this.ratingService.updateRating(idRating, dto).subscribe({
       next: () => {
+        const rating = this.comments.find(r => r.idRating === idRating);
+
+        if (rating) {
+          rating.note = dto.note;
+          rating.commentaire = dto.commentaire;
+          rating.moderation = false;
+        }
+        this.comments = this.comments.filter(r => r.idRating !== idRating);
         this.comments = this.comments.filter(r => r.idRating !== idRating);
 
         this.cancelEdit();
@@ -253,7 +299,6 @@ export class BookDetail implements OnInit {
           'Une erreur est survenue lors de la modification',
           'error'
         );
-
         this.cdr.detectChanges();
       }
     });

@@ -1,0 +1,58 @@
+<div class="p-8 bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-start justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Réservations à valider</h1>
+        <p class="text-gray-600">Validation des réservations et création automatique de l'emprunt.</p>
+      </div>
+
+      <button type="button" (click)="loadReservations()" class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100">
+        Actualiser
+      </button>
+    </div>
+
+    @if (errorMessage) {
+      <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (loading) {
+      <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-600">
+        Chargement...
+      </div>
+    } @else if (reservations.length === 0) {
+      <div class="rounded-xl border border-gray-200 bg-white p-8 text-center text-gray-600">
+        Aucune réservation en attente de validation.
+      </div>
+    } @else {
+      <div class="grid gap-4">
+        @for (reservation of reservations; track reservation.idReservation) {
+          <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-3">
+                <h2 class="text-xl font-semibold text-gray-900">{{ reservation.book?.titre }}</h2>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                  {{ parseStatus(reservation.statut) }}
+                </span>
+              </div>
+
+              <p class="text-sm text-gray-600">Auteur : {{ reservation.book?.auteur }}</p>
+              <p class="text-sm text-gray-600">Compte : {{ reservation.idAccount }}</p>
+              <p class="text-sm text-gray-600">Date : {{ reservation.dateReservation }}</p>
+              @if (reservation.rangFileAttente !== null) {
+                <p class="text-sm text-gray-600">Rang file d'attente : {{ reservation.rangFileAttente }}</p>
+              }
+            </div>
+
+            <div class="flex gap-3">
+              <button type="button" (click)="validateReservation(reservation)" [disabled]="actionInProgress" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300">
+                Valider et emprunter
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

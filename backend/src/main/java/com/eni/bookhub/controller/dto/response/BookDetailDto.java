@@ -19,8 +19,12 @@ public record BookDetailDto(
 
         Integer nbExemplairesDisponibles,
 
-        String isbn,
+        // le libellé pour la catégorie
+        String categoryLibelle,
 
-        String categoryLibelle
+        Boolean hasActiveReservation,
+
+        String isbn
+
 ) {
 }

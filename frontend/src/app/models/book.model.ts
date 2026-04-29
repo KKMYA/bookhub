@@ -12,6 +12,7 @@ export interface Book extends BookHome {
     description: string;
     nbExemplaires: number;
     nbExemplairesDisponibles: number;
+    hasActiveReservation?: boolean;
 }
 
 
@@ -26,4 +27,5 @@ export interface BookDto {
     couvertureUrl?: string;
     nbExemplaires: number;
     nbExemplairesDisponibles: number;
+    hasActiveReservation?: boolean;
 }

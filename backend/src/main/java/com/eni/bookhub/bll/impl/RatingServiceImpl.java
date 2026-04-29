@@ -8,10 +8,10 @@ import com.eni.bookhub.controller.dto.mapper.RatingMapper;
 import com.eni.bookhub.controller.dto.request.CreateRatingRequestDTO;
 import com.eni.bookhub.controller.dto.request.UpdateRatingRequestDTO;
 import com.eni.bookhub.controller.dto.response.RatingDto;
+import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.AccountRepository;
 import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.RatingRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,16 +86,16 @@ public class RatingServiceImpl implements RatingService {
      * @return le DTO de l'avis créé
      */
     @Override
+    @Transactional
     public RatingDto createRating(Long idBook, CreateRatingRequestDTO request) {
-        Book book = bookRepository.findById(Math.toIntExact(idBook))
-                .orElseThrow(() -> new EntityNotFoundException("Livre introuvable avec l'id : " + idBook));
+        Book book = bookRepository.findById(Math.toIntExact(idBook)).orElseThrow(()-> new EntityNotFoundException("Book", idBook));
 
         String email = Objects.requireNonNull(SecurityContextHolder.getContext()
                         .getAuthentication())
                 .getName();
 
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Compte introuvable : " + email));
+                .orElseThrow(() -> new EntityNotFoundException("Account", email));
 
         Rating rating = new Rating();
         rating.setNote(request.note());
@@ -124,7 +124,7 @@ public class RatingServiceImpl implements RatingService {
     @Transactional
     public RatingDto validateRating(Long idRating) {
         Rating rating = ratingRepository.findById(idRating)
-                .orElseThrow();
+                .orElseThrow(()-> new EntityNotFoundException("Rating", idRating));
 
         rating.setModeration(true);
         Rating savedRating = ratingRepository.save(rating);
@@ -152,7 +152,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingDto updateRating(Long idRating, UpdateRatingRequestDTO request) {
         Rating rating = ratingRepository.findById(idRating)
-                .orElseThrow(() -> new EntityNotFoundException("Avis introuvable avec l'id : " + idRating));
+                .orElseThrow(() -> new EntityNotFoundException("Avis",idRating));
 
         rating.setNote(request.note());
         rating.setCommentaire(request.commentaire());
@@ -179,7 +179,7 @@ public class RatingServiceImpl implements RatingService {
     @Transactional
     public void deleteRating(Long idRating) {
         Rating rating = ratingRepository.findById(idRating)
-                .orElseThrow(() -> new EntityNotFoundException("Avis introuvable avec l'id : " + idRating));
+                .orElseThrow(() -> new EntityNotFoundException("Avis" , idRating));
 
         Book book = rating.getBook();
 
@@ -196,7 +196,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingDto getRatingById(Long idRating) {
         Rating rating = ratingRepository.findById(idRating)
-                .orElseThrow(() -> new EntityNotFoundException("Avis introuvable avec l'id : " + idRating));
+                .orElseThrow(() -> new EntityNotFoundException("Avis", idRating));
 
         return ratingMapper.toDto(rating);
     }

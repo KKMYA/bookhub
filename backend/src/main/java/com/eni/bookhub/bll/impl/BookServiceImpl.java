@@ -15,8 +15,11 @@ import com.eni.bookhub.exception.EntityAlreadyExistsException;
 import com.eni.bookhub.exception.EntityNotFoundException;
 import com.eni.bookhub.repository.BookRepository;
 import com.eni.bookhub.repository.CategoryRepository;
+import com.eni.bookhub.repository.ReservationRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +31,11 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
+    private static final List<String> ACTIVE_RESERVATION_STATUSES = List.of("PENDING", "AVAILABLE");
+
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private final ReservationRepository reservationRepository;
     private final BookMapper bookMapper;
 
     /**
@@ -55,9 +61,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDetailDto findBookById(int id) {
+        public BookDetailDto findBookById(int id, Long idAccount) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
+                .orElseThrow(() -> new EntityNotFoundException("livre ", id));
+
+        BookDetailDto detailDto = bookMapper.bookEntityToBookDetailDto(book);
+
+        boolean hasActiveReservation = idAccount != null && reservationRepository.existsByBookIdBookAndAccountIdAccountAndStatutIn(
+            id,
+            idAccount,
+            ACTIVE_RESERVATION_STATUSES
+        );
         return bookMapper.bookEntityToBookDetailDto(book);
     }
 
@@ -76,7 +90,7 @@ public class BookServiceImpl implements BookService {
                     return categoryRepository.save(newCategory);
                 });
         if (bookRepository.existsByIsbn(bookDto.isbn())) {
-            throw new EntityAlreadyExistsException("Book with ISBN " + bookDto.isbn() + " already exist.");
+            throw new EntityAlreadyExistsException("le livre existe deja", bookDto.isbn());
         }
         try {
             Book book = bookMapper.bookDtoToBookEntity(bookDto);
@@ -94,7 +108,7 @@ public class BookServiceImpl implements BookService {
     public BookDto updateBook(BookDto bookDto) throws BookhubException {
         Book bookEntity;
         Book existingBook = bookRepository.findByIsbn(bookDto.isbn())
-                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN " + bookDto.isbn() + " n'existe pas."));
+                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN ", bookDto.isbn()));
         try {
             Book bookToUpdate = bookMapper.bookDtoToBookEntity(bookDto);
             bookToUpdate.setIdBook(existingBook.getIdBook());

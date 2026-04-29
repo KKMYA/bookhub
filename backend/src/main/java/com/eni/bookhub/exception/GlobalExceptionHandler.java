@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     //Validation DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Données invalides ou manquantes.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)

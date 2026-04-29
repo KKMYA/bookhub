@@ -12,6 +12,8 @@ import { Reservations } from './pages/reservations/reservations';
 import { LibrarianDashboard } from './pages/dashboard/libraire/librarianDashboard';
 import { BookFormComponent } from './ui/components/form/book/bookForm.component';
 import { AdminDashboard } from './pages/dashboard/admin/adminDashboard';
+import { LibrarianReservations } from './pages/dashboard/libraire/reservations/librarian-reservations';
+import { LibrarianReturns } from './pages/dashboard/libraire/returns/librarian-returns';
 
 export const routes: Routes = [
     { path: "", component: Home },
@@ -22,6 +24,8 @@ export const routes: Routes = [
     { path: "profile", component: Profile, canActivate: [authGuard] },
     { path: "reservations", component: Reservations, canActivate: [authGuard] },
     { path: 'dashboard/librarian', component: LibrarianDashboard, canActivate: [authGuard]  },
+    { path: 'dashboard/librarian/reservations', component: LibrarianReservations, canActivate: [authGuard]  },
+    { path: 'dashboard/librarian/returns', component: LibrarianReturns, canActivate: [authGuard]  },
     { path: 'api/books/create', component: BookFormComponent, canActivate: [authGuard] },
     { path: 'api/books/edit/:id', component: BookFormComponent, canActivate: [authGuard] },
     // { path: 'dashboard/admin', component: AdminDashboard, canActivate: [authGuard] }, a decommenter quand l'adminDashboard sera implementer
