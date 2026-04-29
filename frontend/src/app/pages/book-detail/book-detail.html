@@ -106,7 +106,7 @@
 
           <div class="flex items-center justify-between">
             <p class="font-semibold">
-              {{ rating.firstName }} {{ rating.lastName?.charAt(0) }}., le {{ rating.datePublication | date:'EEEE d MMMM yyyy' }}
+              {{ rating.firstName }} {{ rating.lastName?.charAt(0) }}., le {{ rating.datePublication | date:'EEEE d MMMM yyyy':'':'fr-FR' }}
             </p>
             <div class="flex items-center gap-2">
               <p>{{ rating.note }}</p>

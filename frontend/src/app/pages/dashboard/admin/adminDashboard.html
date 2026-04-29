@@ -1,34 +1,36 @@
 <div class="p-8 bg-gray-50 min-h-screen">
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-6xl mx-auto flex flex-col gap-12">
 
-    <div class="flex justify-between items-center mb-8">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
-        <p class="text-gray-600">Interface d'administration pour la gestion des comptes</p>
+    <!-- ================= USERS ================= -->
+    <div>
+
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+          <p class="text-gray-600">Interface d'administration pour la gestion des comptes</p>
+        </div>
+
+        <button
+          (click)="onAddUser()"
+          class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm">
+          <lucide-angular [img]="Plus" class="w-5 h-5"></lucide-angular>
+          Ajouter un utilisateur
+        </button>
       </div>
 
-      <button
-        (click)="onAddUser()"
-        class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm">
-        <lucide-angular [img]="Plus" class="w-5 h-5"></lucide-angular>
-        Ajouter un utilisateur
-      </button>
-    </div>
+      @if (editingUser) {
+        <app-user-form
+          [user]="editingUser"
+          [isCreating]="isCreating"
+          [roles]="roles"
+          (save)="onSaveUser()"
+          (cancel)="onCancelEdit()">
+        </app-user-form>
+      }
 
-    <!-- Formulaire d'édition/création via composant dédié -->
-    @if (editingUser) {
-      <app-user-form 
-        [user]="editingUser" 
-        [isCreating]="isCreating" 
-        [roles]="roles"
-        (save)="onSaveUser()" 
-        (cancel)="onCancelEdit()">
-      </app-user-form>
-    }
-
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <table class="w-full text-left border-collapse">
-        <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs font-bold">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs font-bold">
           <tr>
             <th class="px-6 py-4">Nom</th>
             <th class="px-6 py-4">Prénom</th>
@@ -36,49 +38,105 @@
             <th class="px-6 py-4">Rôle</th>
             <th class="px-6 py-4 text-center">Actions</th>
           </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          @if (isLoading) {
-            <tr><td colspan="5" class="text-center py-8">Chargement...</td></tr>
-          } @else {
-            @for (user of users; track user.id) {
-              <tr class="hover:bg-gray-50 transition" [class.bg-blue-50]="editingUser?.id === user.id">
-                <td class="px-6 py-4 font-medium text-gray-900">{{ user.nom }}</td>
-                <td class="px-6 py-4 text-gray-600">{{ user.prenom }}</td>
-                <td class="px-6 py-4">{{ user.email }}</td>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            @if (isLoading) {
+              <tr><td colspan="5" class="text-center py-8">Chargement...</td></tr>
+            } @else {
+              @for (user of users; track user.id) {
+                <tr class="hover:bg-gray-50 transition">
+
+                  <td class="px-6 py-4 font-medium">{{ user.nom }}</td>
+                  <td class="px-6 py-4">{{ user.prenom }}</td>
+                  <td class="px-6 py-4">{{ user.email }}</td>
+
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold"
+                          [ngClass]="{
+                            'bg-purple-100 text-purple-700': user.role === 'ADMIN',
+                            'bg-blue-100 text-blue-700': user.role === 'LIBRARIAN',
+                            'bg-green-100 text-green-700': user.role === 'USER'
+                          }">
+                      {{ user.role }}
+                    </span>
+                  </td>
+
+                  <td class="px-6 py-4 text-center">
+                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" (click)="onEditUser(user)" title="Modifier">
+                      <lucide-angular [img]="Pencil" class="w-5 h-5"></lucide-angular>
+                    </button>
+                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" (click)="onDeleteUser(user.id)" title="Supprimer">
+                      <lucide-angular [img]="Trash2" class="w-5 h-5"></lucide-angular>
+                    </button>
+                  </td>
+
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ================= RATINGS ================= -->
+    <div>
+
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Avis en attente</h2>
+        <p class="text-gray-600">Validation des commentaires utilisateurs</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs font-bold">
+          <tr>
+            <th class="px-6 py-4">Utilisateur</th>
+            <th class="px-6 py-4">Commentaire</th>
+            <th class="px-6 py-4 text-center">Actions</th>
+          </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            @for (rating of pendingRatings; track rating.idRating) {
+              <tr class="hover:bg-gray-50 transition">
+
                 <td class="px-6 py-4">
-                  <span [class.bg-purple-100]="user.role === 'ADMIN'"
-                        [class.text-purple-700]="user.role === 'ADMIN'"
-                        [class.bg-blue-100]="user.role === 'LIBRARIAN'"
-                        [class.text-blue-700]="user.role === 'LIBRARIAN'"
-                        [class.bg-green-100]="user.role === 'USER'"
-                        [class.text-green-700]="user.role === 'USER'"
-                        class="px-2 py-1 rounded-full text-xs font-semibold">
-                    {{ user.role }}
-                  </span>
+                  {{ rating.firstName }} {{ rating.lastName }}
                 </td>
 
                 <td class="px-6 py-4">
-                  <div class="flex justify-center gap-3">
-                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" 
-                            (click)="onEditUser(user)"
-                            title="Modifier">
-                      <lucide-angular [img]="Pencil" class="w-5 h-5"></lucide-angular>
+                  {{ rating.commentaire }}
+                </td>
+
+                <td class="px-6 py-4">
+                  <div class="flex gap-2 justify-center">
+                    <button
+                      type="button"
+                      class="bg-green-600 text-white px-3 py-1 rounded"
+                      (click)="onValidateRating(rating.idRating)"
+                      title="Valider">
+                      <lucide-angular [img]="Check" class="w-5 h-5"></lucide-angular>
                     </button>
-                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" 
-                            (click)="onDeleteUser(user.id)"
-                            title="Supprimer">
-                      <lucide-angular [img]="Trash2" class="w-5 h-5"></lucide-angular>
+
+                    <button
+                      type="button"
+                      class="bg-red-600 text-white px-3 py-1 rounded"
+                      (click)="onDeleteRating(rating.idRating)"
+                      title="Supprimer">
+                      <lucide-angular [img]="X" class="w-5 h-5"></lucide-angular>
                     </button>
                   </div>
                 </td>
+
               </tr>
-            } @empty {
-              <tr><td colspan="5" class="text-center py-8 text-gray-500">Aucun utilisateur trouvé.</td></tr>
             }
-          }
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+
     </div>
+
   </div>
 </div>

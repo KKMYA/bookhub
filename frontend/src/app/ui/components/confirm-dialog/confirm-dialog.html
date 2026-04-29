@@ -27,7 +27,8 @@
           [ngClass]="{
             'bg-red-600 hover:bg-red-700': dialog.type === 'danger',
             'bg-yellow-500 hover:bg-yellow-600': dialog.type === 'warning',
-            'bg-blue-600 hover:bg-blue-700': dialog.type === 'info'
+            'bg-blue-600 hover:bg-blue-700': dialog.type === 'info',
+            'bg-green-600 hover:bg-green-800': dialog.type === 'validate'
           }">
           {{ dialog.confirmText }}
         </button>

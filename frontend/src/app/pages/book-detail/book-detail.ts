@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Book } from '../../models/book.model';
-import { finalize, Observable, of } from 'rxjs';
+import { finalize } from 'rxjs';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../services/http/book/book.service';
@@ -77,7 +77,6 @@ export class BookDetail implements OnInit {
       next: (response) => {
         this.comments = response.content ?? [];
         this.cdr.detectChanges();
-        console.log(response.content);
       },
       error: (error) => {
         console.error(error);
@@ -197,6 +196,4 @@ export class BookDetail implements OnInit {
       },
     });
   }
-
-  protected readonly RatingService = RatingService;
 }

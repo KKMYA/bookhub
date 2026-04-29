@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type ConfirmDialogType  = 'danger' | 'warning' | 'info';
+export type ConfirmDialogType  = 'danger' | 'warning' | 'info' | 'validate';
 
 export interface ConfirmDialogData {
   title: string;
