@@ -1,6 +1,8 @@
 package com.eni.bookhub.controller;
 
 import com.eni.bookhub.bll.BookService;
+import com.eni.bookhub.bo.Account;
+import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
 import com.eni.bookhub.bo.Account;
@@ -142,7 +144,6 @@ public class BookController {
 
     /**
      * Find one Book by ID
-     *
      * @return bookDto
      */
     @Operation(summary = "Récupérer un livre par son ID",

@@ -12,9 +12,11 @@ public interface BookService {
 
     PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable);
 
+    BookDetailDto findBookById(int id, Long idAccount);
+
     PaginatedFilesDto<BookDtoResponse> getBooksForDashboard(Pageable pageable);
 
-    BookDetailDto findBookById(int id, Long idAccount);
+
 
     BookDto updateBook(BookDto bookDto);
 

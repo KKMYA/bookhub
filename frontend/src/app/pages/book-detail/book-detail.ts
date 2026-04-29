@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Book } from '../../models/book.model';
 import { finalize, Observable, of } from 'rxjs';
-import { Observable } from 'rxjs';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../services/http/book/book.service';
@@ -31,12 +30,7 @@ export class BookDetail implements OnInit {
   protected popupService = inject(PopupService);
   private authService = inject(AuthService);
   private confirmDialog = inject(ConfirmDialogService);
-    private route = inject(ActivatedRoute);
-    private cdr = inject(ChangeDetectorRef);
-
-    private bookService = inject(BookService);
-    private ratingService = inject(RatingService);
-    private reservationService = inject(ReservationService);
+   private reservationService = inject(ReservationService);
 
   // Variables concernant un user
   currentUserId: number | null = null;
@@ -46,13 +40,11 @@ export class BookDetail implements OnInit {
     comments: BookComment[] = [];
     reserveLoading: boolean = false;
     hasActiveReservation: boolean = false;
-  // Variables concernant les livres
-  book: Book | null = null;
-  bookId: number | null = null;
 
+    book$!: Observable<Book>;
+    book: Book | null = null;
   // Variables concernant les commentaires
   readonly Star = Star;
-  comments: Rating[] = [];
   editingRatingId: number | null = null;
   isSubmittingComment = false;
   editComment = '';
@@ -175,6 +167,16 @@ export class BookDetail implements OnInit {
                 this.cdr.detectChanges();
             }
         });
+    }
+
+    //get paginatedComments(): BookComment[] {
+    //    const start = this.currentCommentPage * this.commentsPerPage;
+    //    const end = start + this.commentsPerPage;
+    //    return this.comments.slice(start, end);
+    //}
+
+    get totalCommentPages(): number {
+        return Math.ceil(this.comments.length / this.commentsPerPage);
     }
 
     //get paginatedComments(): BookComment[] {
