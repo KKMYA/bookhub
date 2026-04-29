@@ -1,5 +1,5 @@
 <div class="p-8 bg-gray-50 min-h-screen">
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-[95%] mx-auto">
 
     <div class="flex justify-between items-center mb-8">
       <div>
@@ -56,8 +56,11 @@
                 <td class="px-6 py-4 text-gray-600">{{ book.auteur }}</td>
                    <td class="px-6 py-4 text-gray-600">{{ book.isbn }}</td>
                 <td class="px-6 py-4">{{ book.categoryLibelle || '' }}</td>
-                <td class="px-6 py-4">{{ book.couvertureUrl || '' }}</td>
+                <td class="truncate px-6 py-4">{{ book.description || '' }}</td>
+                <td class="truncate px-6 py-4">{{ book.couvertureUrl || '' }}</td>
                 <td class="px-6 py-4">{{ book.noteMoyenne || '' }}</td>
+                <td class="px-6 py-4">{{ book.nbExemplaires }}</td>
+                <td class="px-6 py-4">{{ book.nbExemplairesDisponibles }}</td>
 
                 <td class="px-6 py-4">
                   <div class="flex justify-center gap-3">

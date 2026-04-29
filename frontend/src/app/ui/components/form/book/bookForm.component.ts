@@ -5,10 +5,9 @@ import { CategoryService } from '../../../../services/http/category/category.ser
 import { CategoryFilter } from '../../../../models/category.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { stockValidator } from '../../../utils/validator';
-
-
-//WIP a deplacer
-type ToastState = { show: boolean, message: string, type: 'success' | 'error' };
+import { PopupService } from '../../../../services/ui-ux/popup.service';
+import { ConfirmDialogService } from '../../../../services/ui-ux/confirm-dialog.service';
+import { error } from 'console';
 @Component({
   selector: 'app-book-form',
   standalone: true,
@@ -22,7 +21,8 @@ export class BookFormComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  toast = signal<ToastState>({ show: false, message: '', type: 'success' });
+  private confirmDialog = inject(ConfirmDialogService);
+  protected popupService = inject(PopupService);
 
   bookForm: FormGroup;
   categories: CategoryFilter[] = [];
@@ -48,6 +48,7 @@ export class BookFormComponent implements OnInit {
     try {
       this.categories = await this.categoryService.fetchCategories();
     } catch (err) {
+    this.popupService.show("Impossible de charger les catégories", "error");
       console.error("Erreur catégories", err);
     }
 
@@ -90,25 +91,13 @@ export class BookFormComponent implements OnInit {
           noteMoyenne: 0
         };
         await this.bookService.createBook(payload);
-        this.toast.set({ show: true, message: 'Livre enregistré !', type: 'success' });
-
-        setTimeout(() => {
-          this.toast.update(t => ({ ...t, show: false }));
-          this.router.navigate(['/dashboard/librarian'],{ onSameUrlNavigation: 'reload' });
-        }, 2000);
+        this.popupService.show('Livre enregistré avec succès !', 'success');
         this.bookForm.reset({ nbExemplaires: 1, nbExemplairesDisponibles: 1 });
         this.router.navigate(['/dashboard/librarian'],{ onSameUrlNavigation: 'reload' });
 
 
       } catch (err) {
-       this.toast.set({
-          show: true,
-          message: 'Erreur lors de l\'ajout. Vérifiez l\'ISBN ou la connexion.',
-          type: 'error'
-        });
-        setTimeout(() => {
-          this.toast.update(t => ({ ...t, show: false }));
-        }, 5000);
+      this.popupService.show('Erreur lors de l\'ajout.', 'error');
         console.error("Erreur lors de l'ajout du livre", err);
       } finally {
         this.isLoading = false;

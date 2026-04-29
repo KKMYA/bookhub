@@ -12,8 +12,7 @@ import { PopupService } from '../../../services/ui-ux/popup.service';
 
 
 
-//WIP a deplacer
-type ToastState = { show: boolean, message: string, type: 'success' | 'error' };
+//WIP a deplac
 @Component({
   selector: 'app-librarian-dashboard',
   standalone: true,
@@ -30,7 +29,6 @@ export class LibrarianDashboard implements OnInit, OnDestroy {
   protected popupService = inject(PopupService);
 
   books = signal<BookDto[]>([]);
-  toast = signal<ToastState>({ show: false, message: '', type: 'success' });
 
   pendingRatings: Rating[] = [];
   isLoadingRatings = false;
@@ -99,18 +97,24 @@ export class LibrarianDashboard implements OnInit, OnDestroy {
   onEditBook(bookId: number): void {
     this.router.navigate(['/api/books/edit', bookId]);
   }
-  async deleteBook(id: number) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
-      try {
-        await this.bookService.deleteBook(id);
-        this.toast.set({ show: true, message: 'Livre supprimé !', type: 'success' });
-        this.loadAllBooks(); // On rafraîchit la liste
-      } catch (err) {
-        this.toast.set({ show: true, message: 'Erreur lors de la suppression', type: 'error' });
+  deleteBook(id: number) {
+    this.confirmDialog.open({
+      title: 'Supprimer le livre',
+      message: 'Êtes-vous sûr de vouloir supprimer définitivement ce livre ?',
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await this.bookService.deleteBook(id);
+          this.popupService.show('Livre supprimé avec succès', 'success');
+          this.loadAllBooks();
+        } catch (err) {
+          this.popupService.show('Erreur lors de la suppression du livre', 'error');
+        }
       }
-    }
+    });
   }
-
   // Pagination methods
   goToPreviousPage(): void {
     if (this.currentPage > 0 && !this.isLoading) {
