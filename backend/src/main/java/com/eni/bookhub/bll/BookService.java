@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-    PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable);
+    PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable, Long idAccount);
 
     BookDetailDto findBookById(int id, Long idAccount);
 

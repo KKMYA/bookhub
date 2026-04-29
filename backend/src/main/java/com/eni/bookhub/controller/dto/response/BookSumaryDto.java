@@ -19,7 +19,8 @@ public record BookSumaryDto(
 
         String couvertureUrl,
 
-        String categoryLibelle
+        String categoryLibelle,
+        Boolean hasActiveReservation
 
 ) {
 }

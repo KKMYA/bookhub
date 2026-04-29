@@ -49,9 +49,10 @@ public class BookController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     public ResponseEntity<PaginatedFilesDto<BookSumaryDto>> getAllBooks(
-            @PageableDefault(page = 0, size = 9) Pageable pageable) {
+            @PageableDefault(page = 0, size = 9) Pageable pageable,
+            @AuthenticationPrincipal Account account) {
 
-        PaginatedFilesDto<BookSumaryDto> allBooks = bookService.getBooks(pageable);
+        PaginatedFilesDto<BookSumaryDto> allBooks = bookService.getBooks(pageable, account != null ? account.getIdAccount() : null);
         if (allBooks.data().isEmpty()) {
             return ResponseEntity.noContent().build();
         }

@@ -1,8 +1,8 @@
 @if (showSearch) {
-        <div class="mb-12">
-            <app-search (resultsFound)="handleSearchResults($event)"></app-search>
-        </div>
-    }
+<div class="mb-12">
+    <app-search (resultsFound)="handleSearchResults($event)"></app-search>
+</div>
+}
 <div class="p-8">
     @if (isLoading) {
     <p class="text-center text-gray-600">Chargement des livres...</p>
@@ -28,25 +28,24 @@
             </div>
 
             <img [src]="book.couvertureUrl" alt="{{ book.titre }}" class="w-64 h-auto" />
-
-            <!-- <app-button class="w-full" [disabled]="!loggedIn || !book.available">
-                @if (book.available) {
-                Réserver
+            <app-button class="w-full" (click)="$event.stopImmediatePropagation(); reserveBook(book.idBook)"
+                [disabled]="!userIsConnected() || isReserving(book.idBook) || (book.hasActiveReservation || false)">
+                @if (isReserving(book.idBook)) {
+                Réservation...
+                } @else if (book.hasActiveReservation) {
+                Déjà réservé
                 } @else {
-                Indisponible
+                Réserver
                 }
-            </app-button> -->
+            </app-button>
         </a>
         }
     </div>
+    }
 
     <div class="mt-8 flex items-center justify-center gap-4">
-        <button
-            type="button"
-            (click)="goToPreviousPage()"
-            [disabled]="currentPage === 0 || isLoading"
-            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <button type="button" (click)="goToPreviousPage()" [disabled]="currentPage === 0 || isLoading"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50">
             Précédent
         </button>
 
@@ -54,14 +53,9 @@
             Page {{ totalPages === 0 ? 0 : currentPage + 1 }} / {{ totalPages }}
         </p>
 
-        <button
-            type="button"
-            (click)="goToNextPage()"
-            [disabled]="isLoading || currentPage + 1 >= totalPages"
-            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <button type="button" (click)="goToNextPage()" [disabled]="isLoading || currentPage + 1 >= totalPages"
+            class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50">
             Suivant
         </button>
     </div>
-    }
 </div>

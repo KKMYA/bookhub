@@ -42,11 +42,31 @@ public class BookServiceImpl implements BookService {
      * get bookDto object
      * use mapper class
      */
-    public PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable) {
+    public PaginatedFilesDto<BookSumaryDto> getBooks(Pageable pageable, Long idAccount) {
         Page<Book> bookPage = bookRepository.findAll(pageable);
 
         List<BookSumaryDto> BookListDtos = bookPage.getContent().stream()
-                .map(bookMapper::bookEntityToBookSumaryDto)
+                .map(book -> {
+                    BookSumaryDto dto = bookMapper.bookEntityToBookSumaryDto(book);
+                    boolean hasActiveReservation = idAccount != null && reservationRepository.existsByBookIdBookAndAccountIdAccountAndStatutIn(
+                            book.getIdBook(),
+                            idAccount,
+                            ACTIVE_RESERVATION_STATUSES
+                    );
+                    if (hasActiveReservation) {
+                        return new BookSumaryDto(
+                                dto.idBook(),
+                                dto.titre(),
+                                dto.auteur(),
+                                dto.noteMoyenne(),
+                                dto.nbExemplairesDisponibles(),
+                                dto.couvertureUrl(),
+                                dto.categoryLibelle(),
+                                true
+                        );
+                    }
+                    return dto;
+                })
                 .toList();
         return new PaginatedFilesDto<>(BookListDtos, bookPage.getTotalElements());
     }
@@ -72,7 +92,18 @@ public class BookServiceImpl implements BookService {
             idAccount,
             ACTIVE_RESERVATION_STATUSES
         );
-        return bookMapper.bookEntityToBookDetailDto(book);
+
+        return new BookDetailDto(
+            detailDto.titre(),
+            detailDto.auteur(),
+            detailDto.noteMoyenne(),
+            detailDto.description(),
+            detailDto.couvertureUrl(),
+            detailDto.nbExemplairesDisponibles(),
+            detailDto.categoryLibelle(),
+            hasActiveReservation,
+            detailDto.isbn()
+        );
     }
 
     /**

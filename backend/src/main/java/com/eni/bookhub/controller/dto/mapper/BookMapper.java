@@ -32,6 +32,7 @@ public interface BookMapper {
      * book Sumary
      */
     @Mapping(source = "category.libelle", target = "categoryLibelle")
+    @Mapping(target = "hasActiveReservation", constant = "false")
     BookSumaryDto bookEntityToBookSumaryDto(Book book);
 
 

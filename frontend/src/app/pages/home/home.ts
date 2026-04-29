@@ -1,18 +1,20 @@
-import { afterNextRender, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { BookHome } from '../../models/book.model';
-import { Button } from "../../ui/components/button/button";
+
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../services/http/book/book.service';
+import { ReservationService } from '../../services/http/reservation/reservation.service';
 import { RouterModule } from '@angular/router';
 import { SearchComponent } from '../../ui/components/search/search';
 import { SearchEvent, SearchParams } from '../../models/searchParam.model';
 import { AuthService } from '../../services/auth/auth.service';
+import { Button } from '../../ui/components/button/button';
 
 @Component({
     selector: 'app-home',
     standalone: true,
     imports: [
-        // Button,
+        Button,
         LucideAngularModule,
         RouterModule,
         SearchComponent,
@@ -24,11 +26,21 @@ export class Home implements OnInit {
     private bookService = inject(BookService);
     private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
+    private reservationService = inject(ReservationService);
 
     readonly Star = Star;
     readonly pageSize: number = 9;
 
   userIsConnected = signal<boolean>(false);
+
+    reserveLoadingIds: number[] = [];
+
+    private markBookReserved(bookId: number): void {
+        const book = this.books.find(b => b.idBook === bookId);
+        if (book) {
+            (book as BookHome).hasActiveReservation = true;
+        }
+    }
 
 
     loggedIn: boolean = false;
@@ -42,7 +54,7 @@ export class Home implements OnInit {
 
     ngOnInit(): void {
       this.userIsConnected.set(this.authService.isLoggedIn);
-      this.loadBooks();
+              this.loadBooks();
 
     }
 
@@ -62,7 +74,7 @@ export class Home implements OnInit {
                 this.total = response.totalElements;
                 this.currentPage = page;
                 this.totalPages = Math.ceil(this.total / this.pageSize);
-                this.cdr.detectChanges();
+                this.cdr.markForCheck();
             },
             error: (error) => {
                 console.error('Erreur lors du chargement des livres :', error);
@@ -72,7 +84,37 @@ export class Home implements OnInit {
             },
             complete: () => {
                 this.isLoading = false;
-                this.cdr.detectChanges();
+                this.cdr.markForCheck();
+            }
+        });
+    }
+
+    isReserving(bookId: number): boolean {
+        return this.reserveLoadingIds.includes(bookId);
+    }
+
+    reserveBook(bookId: number): void {
+        if (!this.authService.isLoggedIn) {
+            alert('Veuillez vous connecter pour réserver un livre.');
+            return;
+        }
+
+        if (this.isReserving(bookId)) return;
+
+        this.reserveLoadingIds.push(bookId);
+
+        this.reservationService.createReservation(bookId).subscribe({
+            next: () => {
+                alert('Réservation réussie !');
+                this.markBookReserved(bookId);
+            },
+            error: (error) => {
+                console.error('Erreur lors de la réservation :', error);
+                alert('Erreur lors de la réservation. Veuillez réessayer plus tard.');
+            },
+            complete: () => {
+                this.reserveLoadingIds = this.reserveLoadingIds.filter(id => id !== bookId);
+                this.cdr.markForCheck();
             }
         });
     }
@@ -84,11 +126,10 @@ export class Home implements OnInit {
     handleSearchResults(results: SearchEvent): void {
             this.books = results.results.data;
             this.total = results.results.totalElements;
-            // Correction ici : utilise totalPages du serveur ou recalcule
-            this.totalPages = results.results.totalElements;
+            this.totalPages = Math.ceil(this.total / this.pageSize);
             this.currentPage = 0;
             this.currentFilters = results.filters;
-            this.cdr.detectChanges();
+            this.cdr.markForCheck();
         }
 
     goToPreviousPage(): void {

@@ -5,6 +5,7 @@ export interface BookHome {
     noteMoyenne: number;
     couvertureUrl?: string;
     categoryLibelle?: string;
+    hasActiveReservation?: boolean;
 }
 
 export interface Book extends BookHome {
