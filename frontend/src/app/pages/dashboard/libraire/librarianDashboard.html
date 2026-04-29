@@ -6,12 +6,28 @@
         <h1 class="text-3xl font-bold text-gray-900">Gestion du Catalogue</h1>
       </div>
 
-      <button
-        (click)="onAddBook()"
-        class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm">
-        <lucide-angular [img]="Plus" class="w-5 h-5"></lucide-angular>
-        Ajouter un livre
-      </button>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="onOpenReservations()"
+          class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100">
+          Réservations
+        </button>
+
+        <button
+          type="button"
+          (click)="onOpenReturns()"
+          class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100">
+          Retours de livres
+        </button>
+
+        <button
+          (click)="onAddBook()"
+          class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition shadow-sm">
+          <lucide-angular [img]="Plus" class="w-5 h-5"></lucide-angular>
+          Ajouter un livre
+        </button>
+      </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

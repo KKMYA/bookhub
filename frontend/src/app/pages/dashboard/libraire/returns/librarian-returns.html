@@ -1,0 +1,67 @@
+<div class="flex flex-col gap-8 p-8 pt-4">
+    <div class="flex justify-between items-center">
+        <h1 class="font-bold text-2xl">Gestion des retours de livres</h1>
+        <button type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300" (click)="loadActiveLoans()" [disabled]="loading()">
+            Actualiser
+        </button>
+    </div>
+
+    @if (errorMessage()) {
+        <div class="rounded-lg bg-red-50 border border-red-200 p-4">
+            <p class="text-red-700 font-semibold">{{ errorMessage() }}</p>
+        </div>
+    }
+
+    @if (loading()) {
+        <div class="flex justify-center">
+            <p class="text-gray-600">Chargement des emprunts actifs...</p>
+        </div>
+    }
+
+    @if (!loading() && activeLoans().length === 0) {
+        <div class="text-center py-12">
+            <p class="text-gray-600 text-lg">Aucun emprunt en cours à traiter.</p>
+        </div>
+    }
+
+    @if (!loading() && activeLoans().length > 0) {
+        <div class="grid grid-cols-1 gap-4">
+            @for (loan of activeLoans(); track loan.idEmprunt) {
+                @if (!loan.book) {
+                    <p class="text-center text-gray-600">Informations du livre indisponibles.</p>
+                } @else {
+                    <div class="flex flex-row rounded-xl bg-yellow-50 p-4 gap-4 w-full justify-between border border-yellow-200">
+                        <div class="flex flex-row gap-3">
+                            <div>
+                                <img [src]="loan.book.couvertureUrl" alt="Couverture du livre"
+                                    class="w-20 h-28 object-cover rounded-md">
+                            </div>
+
+                            <div class="flex flex-col justify-between">
+                                <div>
+                                    <h2 class="font-bold text-lg">{{ loan.book.titre }}</h2>
+                                    <p class="text-gray-600">Auteur : {{ loan.book.auteur }}</p>
+                                </div>
+
+                                <div class="text-sm text-gray-600">
+                                    <p>Emprunté le : {{ parseDate(loan.dateDebut) }}</p>
+                                    <p>À rendre avant le : {{ parseDate(loan.dateRetourPrevue) }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <button type="button" class="rounded-lg bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300" (click)="returnLoan(loan)" [disabled]="actionInProgress() || processingLoanId() === loan.idEmprunt">
+                                @if (processingLoanId() === loan.idEmprunt) {
+                                    Traitement...
+                                } @else {
+                                    Retourner le livre
+                                }
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>

@@ -50,6 +50,9 @@
                     <app-link href="/dashboard/librarian" (click)="closeMenu()" >
                         Gestion des livres
                     </app-link>
+                    <app-link href="/dashboard/librarian/reservations" (click)="closeMenu()" >
+                        Réservations
+                    </app-link>
                   }
                   @if (authService.role === 'ADMIN' ) {
                     <app-link href="/dashboard/admin" (click)="closeMenu()" >

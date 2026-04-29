@@ -77,6 +77,15 @@ private route = inject(ActivatedRoute);
   onAddBook(): void {
     this.router.navigate(['/api/books/create']);
   }
+
+  onOpenReservations(): void {
+    this.router.navigate(['/dashboard/librarian/reservations']);
+  }
+
+  onOpenReturns(): void {
+    this.router.navigate(['/dashboard/librarian/returns']);
+  }
+
   onEditBook(bookId: number): void {
     this.router.navigate(['/api/books/edit', bookId]);
   }
