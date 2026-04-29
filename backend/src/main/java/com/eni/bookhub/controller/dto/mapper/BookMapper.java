@@ -2,6 +2,7 @@ package com.eni.bookhub.controller.dto.mapper;
 
 import com.eni.bookhub.bo.Book;
 import com.eni.bookhub.controller.dto.request.BookDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import org.mapstruct.Mapper;
@@ -19,6 +20,13 @@ public interface BookMapper {
 
     @Mapping(source ="category.libelle", target = "categoryLibelle")
     BookDto bookEntityToBookDto(Book book);
+
+
+    /*
+    * Dashboard Libraire
+    * */
+    @Mapping(source ="category.libelle", target = "categoryLibelle")
+    BookDtoResponse bookEntityToBookDtoResponse(Book book);
 
     /**
      * book Sumary

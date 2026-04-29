@@ -6,6 +6,7 @@ import com.eni.bookhub.bo.Category;
 import com.eni.bookhub.controller.dto.mapper.BookMapper;
 import com.eni.bookhub.controller.dto.request.BookDto;
 import com.eni.bookhub.controller.dto.request.BookSearchDto;
+import com.eni.bookhub.controller.dto.response.BookDtoResponse;
 import com.eni.bookhub.controller.dto.response.BookSumaryDto;
 import com.eni.bookhub.controller.dto.response.BookDetailDto;
 import com.eni.bookhub.controller.dto.response.PaginatedFilesDto;
@@ -51,6 +52,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public PaginatedFilesDto<BookDtoResponse> getBooksForDashboard(Pageable pageable) {
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        List<BookDtoResponse> BookListDtos = bookPage.getContent().stream()
+                .map(bookMapper::bookEntityToBookDtoResponse)
+                .toList();
+        return new PaginatedFilesDto<>(BookListDtos, bookPage.getTotalElements());
+    }
+
+    @Override
         public BookDetailDto findBookById(int id, Long idAccount) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
@@ -71,7 +81,8 @@ public class BookServiceImpl implements BookService {
             detailDto.couvertureUrl(),
             detailDto.nbExemplairesDisponibles(),
             detailDto.categoryLibelle(),
-            hasActiveReservation
+            hasActiveReservation,
+                detailDto.isbn()
         );
     }
 
@@ -136,13 +147,14 @@ public class BookServiceImpl implements BookService {
      * Pour la recherche
      */
     public PaginatedFilesDto<BookSumaryDto> searchBooks(BookSearchDto searchDto, Pageable pageable) {
+        String searchTerm = (searchDto.searchTerm() == null || searchDto.searchTerm().isBlank())
+                ? null : searchDto.searchTerm();
 
-        Page<Book> bookPage = bookRepository.searchBooks(
-                searchDto.searchTerm(),
-                searchDto.categoryLibelle(),
-                searchDto.isAvailable(),
-                pageable
-        );
+        String category = (searchDto.categoryLibelle() == null || searchDto.categoryLibelle().isBlank())
+                ? null : searchDto.categoryLibelle();
+        Boolean isAvailable = (searchDto.isAvailable() == null || !searchDto.isAvailable())
+                ? null : true;
+        Page<Book> bookPage = bookRepository.searchBooks(searchTerm, category, isAvailable, pageable);
         List<BookSumaryDto> dtos = bookPage.getContent().stream()
                 .map(bookMapper::bookEntityToBookSumaryDto)
                 .toList();
