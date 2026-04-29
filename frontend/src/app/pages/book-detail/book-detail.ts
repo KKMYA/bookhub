@@ -10,6 +10,7 @@ import { Rating } from '../../models/rating.model';
 import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreateRatingDto } from '../../models/create-rating.dto';
+import { UpdateRatingDto } from '../../models/update-rating.dto';
 import { PopupService } from '../../services/ui-ux/popup.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { ConfirmDialogService } from '../../services/ui-ux/confirm-dialog.service';
@@ -17,36 +18,58 @@ import { ConfirmDialogService } from '../../services/ui-ux/confirm-dialog.servic
 @Component({
   selector: 'app-book-detail',
   standalone: true,
-  imports: [Button, LucideAngularModule, DatePipe, FormsModule, NgClass],
+  imports: [Button, LucideAngularModule, DatePipe, FormsModule],
   templateUrl: './book-detail.html',
 })
 export class BookDetail implements OnInit {
-  // Services
+  // Services Angular et applicatifs
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
   private bookService = inject(BookService);
   private ratingService = inject(RatingService);
-  protected popupService = inject(PopupService);
   private authService = inject(AuthService);
   private confirmDialog = inject(ConfirmDialogService);
 
-  // Variables concernant un user
+  // Service exposé au template pour afficher les popups
+  protected popupService = inject(PopupService);
+
+  // Icône utilisée dans le template
+  readonly Star = Star;
+
+  // Utilisateur connecté
   currentUserId: number | null = null;
 
-  // Variables concernant les livres
+  // Livre affiché
   book: Book | null = null;
   bookId: number | null = null;
 
-  // Variables concernant les commentaires
-  readonly Star = Star;
+  // Commentaires affichés
   comments: Rating[] = [];
+
+  // Pagination des commentaires
+  ratingsCurrentPage = 0;
+  ratingsTotalPages = 0;
+  ratingsTotal = 0;
+  readonly ratingsPageSize = 10;
+  isLoadingRatings = false;
+
+  // Édition d’un commentaire existant
   editingRatingId: number | null = null;
-  isSubmittingComment = false;
   editComment = '';
   editRating = 0;
-  newComment: string = '';
-  newRating: number = 0;
 
+  // Création d’un nouveau commentaire
+  isSubmittingComment = false;
+  newComment = '';
+  newRating = 0;
+
+  /**
+   * Initialise la page détail :
+   * - récupère l'id du livre depuis l'URL ;
+   * - récupère l'utilisateur connecté ;
+   * - charge le livre ;
+   * - charge les commentaires validés avec pagination.
+   */
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.currentUserId = this.authService.getUserId();
@@ -58,7 +81,6 @@ export class BookDetail implements OnInit {
 
     this.bookId = id;
 
-    // Chargement du livre
     this.bookService.getBookById(id).subscribe({
       next: (response) => {
         this.book = response;
@@ -72,25 +94,78 @@ export class BookDetail implements OnInit {
       },
     });
 
-    // Chargement des commentaires
-    this.ratingService.fetchRatings(id, 0, 10).subscribe({
+    this.loadRatings(0);
+  }
+
+  /**
+   * Charge les commentaires validés du livre courant.
+   *
+   * @param page numéro de page demandé
+   */
+  loadRatings(page: number = this.ratingsCurrentPage): void {
+    if (!this.bookId || page < 0) return;
+
+    this.isLoadingRatings = true;
+
+    this.ratingService.fetchRatings(this.bookId, page, this.ratingsPageSize).subscribe({
       next: (response) => {
         this.comments = response.content ?? [];
+
+        this.ratingsTotal = response.totalElements;
+        this.ratingsCurrentPage = response.number ?? page;
+        this.ratingsTotalPages =
+          response.totalPages ?? Math.ceil(response.totalElements / this.ratingsPageSize);
+
+        this.isLoadingRatings = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error(error);
         this.comments = [];
-      },
+        this.isLoadingRatings = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  setRating(star: number) {
+  /**
+   * Passe à la page précédente des commentaires.
+   */
+  goToPreviousRatingsPage(): void {
+    if (this.ratingsCurrentPage > 0 && !this.isLoadingRatings) {
+      this.loadRatings(this.ratingsCurrentPage - 1);
+    }
+  }
+
+  /**
+   * Passe à la page suivante des commentaires.
+   */
+  goToNextRatingsPage(): void {
+    if (
+      this.ratingsCurrentPage + 1 < this.ratingsTotalPages &&
+      !this.isLoadingRatings
+    ) {
+      this.loadRatings(this.ratingsCurrentPage + 1);
+    }
+  }
+
+  /**
+   * Définit la note sélectionnée pour un nouveau commentaire.
+   *
+   * @param star note choisie entre 1 et 5
+   */
+  setRating(star: number): void {
     this.newRating = star;
   }
 
-  submitComment() {
-    if (!this.book || !this.newComment.trim() || this.newRating === 0) return;
+  /**
+   * Crée un nouveau commentaire pour le livre courant.
+   *
+   * Le commentaire n'est pas ajouté directement à la liste,
+   * car il repasse par la modération côté backend.
+   */
+  submitComment(): void {
+    if (!this.bookId || !this.newComment.trim() || this.newRating === 0) return;
 
     const dto: CreateRatingDto = {
       note: this.newRating,
@@ -99,82 +174,97 @@ export class BookDetail implements OnInit {
 
     this.isSubmittingComment = true;
 
-    if (this.bookId != null) {
-      this.ratingService
-        .createRating(this.bookId, dto)
-        .pipe(
-          finalize(() => {
-            this.isSubmittingComment = false;
+    this.ratingService
+      .createRating(this.bookId, dto)
+      .pipe(
+        finalize(() => {
+          this.isSubmittingComment = false;
+          this.cdr.detectChanges();
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.newComment = '';
+          this.newRating = 0;
 
-            this.cdr.detectChanges();
-          }),
-        )
-        .subscribe({
-          next: () => {
-            this.newComment = '';
-            this.newRating = 0;
-            this.popupService.show(
-              'Votre commentaire a été envoyé et sera publié après modération.',
-              'success',
-            );
-          },
-          error: (err) => {
-            console.error('ERROR', err);
-            this.popupService.show('Une erreur est survenue.', 'error');
-          },
-        });
-    }
+          this.popupService.show(
+            'Votre commentaire a été envoyé et sera publié après modération.',
+            'success',
+          );
+        },
+        error: (err) => {
+          console.error('ERROR', err);
+          this.popupService.show('Une erreur est survenue.', 'error');
+        },
+      });
   }
 
-  onEditRating(rating: Rating) {
+  /**
+   * Active le mode édition pour un commentaire.
+   *
+   * @param rating commentaire à modifier
+   */
+  onEditRating(rating: Rating): void {
     this.editingRatingId = rating.idRating;
     this.editComment = rating.commentaire;
     this.editRating = rating.note;
   }
 
-  cancelEdit() {
+  /**
+   * Annule l'édition en cours.
+   */
+  cancelEdit(): void {
     this.editingRatingId = null;
     this.editComment = '';
     this.editRating = 0;
   }
 
-  // Méthode onClick pour l'édition d'un commentaire
-  confirmEdit(idRating: number) {
-    if(!idRating || !this.editComment.trim() || this.editRating === 0) return;
+  /**
+   * Enregistre la modification d'un commentaire.
+   *
+   * Après modification, le commentaire est retiré de la liste publique
+   * car il repasse en modération côté backend.
+   *
+   * @param idRating identifiant du commentaire modifié
+   */
+  confirmEdit(idRating: number): void {
+    if (!idRating || !this.editComment.trim() || this.editRating === 0) return;
 
-    const dto: CreateRatingDto = {
+    const dto: UpdateRatingDto = {
       note: this.editRating,
       commentaire: this.editComment.trim(),
     };
 
     this.ratingService.updateRating(idRating, dto).subscribe({
       next: () => {
-      const rating = this.comments.find(r => r.idRating === idRating);
+        this.comments = this.comments.filter(r => r.idRating !== idRating);
 
-      if(rating){
-        rating.note = dto.note;
-        rating.commentaire = dto.commentaire;
-        rating.moderation = false;
-      }
-      this.comments = this.comments.filter(r => r.idRating !== idRating);
+        this.cancelEdit();
 
-      this.cancelEdit();
-      this.popupService.show(
-        'Commentaire modifié avec succès, ce dernier est désormais en cours de modération',
-        'success'
-      );
+        this.popupService.show(
+          'Commentaire modifié avec succès, ce dernier est désormais en cours de modération',
+          'success'
+        );
+
+        this.cdr.detectChanges();
       },
       error: () => {
         this.popupService.show(
           'Une erreur est survenue lors de la modification',
           'error'
-        )
+        );
+
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // Méthode onClick pour la suppression d'un commentaire
-  onDeleteRating(idRating: number) {
+  /**
+   * Demande confirmation avant suppression d'un commentaire.
+   *
+   * @param idRating identifiant du commentaire à supprimer
+   */
+  onDeleteRating(idRating: number): void {
     if (!idRating) return;
 
     this.confirmDialog.open({
@@ -186,11 +276,13 @@ export class BookDetail implements OnInit {
       onConfirm: () => {
         this.ratingService.deleteRating(idRating).subscribe({
           next: () => {
-            this.comments = this.comments.filter((r) => r.idRating !== idRating);
+            this.comments = this.comments.filter(r => r.idRating !== idRating);
             this.popupService.show('Commentaire supprimé', 'success');
+            this.cdr.detectChanges();
           },
           error: () => {
             this.popupService.show('Erreur lors de la suppression', 'error');
+            this.cdr.detectChanges();
           },
         });
       },

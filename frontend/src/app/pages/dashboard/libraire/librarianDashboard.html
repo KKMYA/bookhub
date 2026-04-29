@@ -86,5 +86,84 @@
             Suivant
         </button>
     </div>
+    <!-- ================= RATINGS ================= -->
+    <div>
+
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Avis en attente</h2>
+        <p class="text-gray-600">Validation des commentaires utilisateurs</p>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs font-bold">
+          <tr>
+            <th class="px-6 py-4">Utilisateur</th>
+            <th class="px-6 py-4">Commentaire</th>
+            <th class="px-6 py-4 text-center">Actions</th>
+          </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            @for (rating of pendingRatings; track rating.idRating) {
+              <tr class="hover:bg-gray-50 transition">
+
+                <td class="px-6 py-4">
+                  {{ rating.firstName }} {{ rating.lastName }}
+                </td>
+
+                <td class="px-6 py-4">
+                  {{ rating.commentaire }}
+                </td>
+
+                <td class="px-6 py-4">
+                  <div class="flex gap-2 justify-center">
+                    <button
+                      type="button"
+                      class="bg-green-600 text-white px-3 py-1 rounded"
+                      (click)="onValidateRating(rating.idRating)"
+                      title="Valider">
+                      <lucide-angular [img]="Check" class="w-5 h-5"></lucide-angular>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="bg-red-600 text-white px-3 py-1 rounded"
+                      (click)="onDeleteRating(rating.idRating)"
+                      title="Supprimer">
+                      <lucide-angular [img]="X" class="w-5 h-5"></lucide-angular>
+                    </button>
+                  </div>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-8 flex items-center justify-center gap-4">
+        <button
+          type="button"
+          (click)="goToPreviousRatingsPage()"
+          [disabled]="ratingsCurrentPage === 0 || isLoadingRatings"
+          class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Précédent
+        </button>
+
+        <p class="text-sm text-gray-700">
+          Page {{ totalPages === 0 ? 0 : currentPage + 1 }} / {{ totalPages }}
+        </p>
+
+        <button
+          type="button"
+          (click)="goToNextRatingsPage()"
+          [disabled]="ratingsCurrentPage + 1 >= ratingsTotalPages || isLoadingRatings"
+          class="rounded-lg border border-gray-400 px-4 py-2 text-sm font-semibold text-gray-700 transition disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Suivant
+        </button>
+      </div>
+    </div>
   </div>
 </div>
