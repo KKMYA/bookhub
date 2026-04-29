@@ -23,6 +23,16 @@ export class RatingService {
     );
   }
 
+  fetchPendingRatings(
+    page: number = 0,
+    size: number = 10,
+  ): Observable<PaginatedFilesDto<Rating>> {
+    return this.http.get<PaginatedFilesDto<Rating>>(
+      `${Endpoints.getRatingsApiEndPoint}/pending?page=${page}&size=${size}`
+    );
+  }
+
+
   createRating(idBook: number, dto: CreateRatingDto): Observable<any> {
     return this.http.post(`${Endpoints.getBooksApiEndpoint}/${idBook}/ratings`, dto);
   }
@@ -34,4 +44,13 @@ export class RatingService {
   updateRating(idRating: number, dto: UpdateRatingDto): Observable<any> {
     return this.http.patch(`${Endpoints.getRatingsApiEndPoint}/${idRating}`, dto);
   }
+
+  validateRating(idRating: number): Observable<any> {
+    return this.http.put(
+      `${Endpoints.getRatingsApiEndPoint}/${idRating}/validate`,
+      {}
+    );
+  }
+
+
 }

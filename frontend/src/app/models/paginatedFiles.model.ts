@@ -1,7 +1,9 @@
-import { Rating } from './rating.model';
-
 export interface PaginatedFilesDto<T> {
-  content: Rating[];
+  content: T[];
   data: T[];
   totalElements: number;
+
+  totalPages?: number;
+  size?: number;
+  number?: number;
 }

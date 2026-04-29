@@ -1,7 +1,23 @@
 <main class="main">
     <app-header></app-header>
 </main>
+<router-outlet></router-outlet>
 
+<app-confirm-dialog></app-confirm-dialog>
+
+@if (popupService.message()) {
+  <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+    <div
+      class="px-6 py-3 rounded-lg shadow-lg animate-popup"
+      [ngClass]="{
+        'bg-green-600 text-white': popupService.type() === 'success',
+        'bg-red-600 text-white': popupService.type() === 'error',
+        'bg-yellow-500 text-black': popupService.type() === 'warning'
+      }">
+      {{ popupService.message() }}
+    </div>
+  </div>
+}
 <router-outlet />
 
 <app-confirm-dialog></app-confirm-dialog>

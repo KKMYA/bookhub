@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from "@angula
 import { User } from "../../../models/user.model";
 import { UserService } from "../../../services/http/user/user.service";
 import { Router } from "@angular/router";
-import { LucideAngularModule, Pencil, Plus, Trash2, X, Check } from "lucide-angular";
+import { LucideAngularModule, Pencil, Plus, Trash2} from "lucide-angular";
 import { Subject, takeUntil } from "rxjs";
 import { UserForm } from "../../../ui/components/form/userForm.component";
 
@@ -20,16 +20,18 @@ export class AdminDashboard implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private cdr = inject(ChangeDetectorRef);
 
+
   users: User[] = [];
   isLoading = false;
   editingUser: any | null = null;
   isCreating = false;
 
+
   readonly Pencil = Pencil;
   readonly Trash2 = Trash2;
   readonly Plus = Plus;
-  readonly X = X;
-  readonly Check = Check;
+
+
 
   roles = ['USER', 'LIBRARIAN', 'ADMIN'];
 
@@ -128,4 +130,5 @@ export class AdminDashboard implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
 }
