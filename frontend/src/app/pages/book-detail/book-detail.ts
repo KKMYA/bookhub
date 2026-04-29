@@ -14,12 +14,13 @@ import { PopupService } from '../../services/ui-ux/popup.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { ConfirmDialogService } from '../../services/ui-ux/confirm-dialog.service';
 import { ReservationService } from '../../services/http/reservation/reservation.service';
+import { BookComment } from '../../models/comment.model';
 
 @Component({
-    selector: 'app-book-detail',
-    standalone: true,
-    imports: [Button, LucideAngularModule],
-    templateUrl: './book-detail.html'
+  selector: 'app-book-detail',
+  standalone: true,
+  imports: [Button, LucideAngularModule, DatePipe, FormsModule, NgClass],
+  templateUrl: './book-detail.html'
 })
 export class BookDetail implements OnInit {
   // Services
@@ -30,27 +31,27 @@ export class BookDetail implements OnInit {
   protected popupService = inject(PopupService);
   private authService = inject(AuthService);
   private confirmDialog = inject(ConfirmDialogService);
-   private reservationService = inject(ReservationService);
+  private reservationService = inject(ReservationService);
 
   // Variables concernant un user
   currentUserId: number | null = null;
 
-    bookId: number | null = null;
-    currentCommentPage: number = 0;
-    comments: BookComment[] = [];
-    reserveLoading: boolean = false;
-    hasActiveReservation: boolean = false;
+  bookId: number | null = null;
+  reserveLoading: boolean = false;
+  hasActiveReservation: boolean = false;
 
-    book$!: Observable<Book>;
-    book: Book | null = null;
+  book$!: Observable<Book>;
+  book: Book | null = null;
   // Variables concernant les commentaires
   readonly Star = Star;
+  comments: Rating[] = [];
   editingRatingId: number | null = null;
   isSubmittingComment = false;
   editComment = '';
   editRating = 0;
   newComment: string = '';
   newRating: number = 0;
+
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -63,20 +64,20 @@ export class BookDetail implements OnInit {
 
     this.bookId = id;
 
-        this.bookService.getBookById(id).subscribe({
-            next: (response) => {
-                this.hasActiveReservation = response.hasActiveReservation ?? false;
+    this.bookService.getBookById(id).subscribe({
+      next: (response) => {
+        this.hasActiveReservation = response.hasActiveReservation ?? false;
 
-                this.book = response;
-            },
-            error: (error) => {
-                console.error('Erreur lors du chargement du livre :', error);
-                this.book = null;
-            },
-            complete: () => {
-                this.cdr.detectChanges();
-            }
-        });
+        this.book = response;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du livre :', error);
+        this.book = null;
+      },
+      complete: () => {
+        this.cdr.detectChanges();
+      }
+    });
 
     // Chargement des commentaires
     this.ratingService.fetchRatings(id, 0, 10).subscribe({
@@ -91,6 +92,38 @@ export class BookDetail implements OnInit {
       },
     });
   }
+
+
+  reserveBook(): void {
+    if (this.bookId === null) return;
+
+    if (this.book?.hasActiveReservation) {
+      alert('Vous avez déjà une réservation active pour ce livre.');
+
+      return;
+    }
+
+    this.reserveLoading = true;
+
+    this.reservationService.createReservation(this.bookId).subscribe({
+      next: () => {
+        alert('Réservation réussie !');
+
+        this.hasActiveReservation = true;
+      },
+      error: (error) => {
+        console.error('Erreur lors de la réservation :', error);
+
+        alert('Erreur lors de la réservation. Veuillez réessayer plus tard.');
+      },
+      complete: () => {
+        this.reserveLoading = false;
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
 
   setRating(star: number) {
     this.newRating = star;
@@ -139,51 +172,6 @@ export class BookDetail implements OnInit {
     this.editRating = rating.note;
   }
 
-    reserveBook(): void {
-        if (this.bookId === null) return;
-
-        if (this.book?.hasActiveReservation) {
-            alert('Vous avez déjà une réservation active pour ce livre.');
-
-            return;
-        }
-
-        this.reserveLoading = true;
-
-        this.reservationService.createReservation(this.bookId).subscribe({
-            next: () => {
-                alert('Réservation réussie !');
-
-                this.hasActiveReservation = true;
-            },
-            error: (error) => {
-                console.error('Erreur lors de la réservation :', error);
-
-                alert('Erreur lors de la réservation. Veuillez réessayer plus tard.');
-            },
-            complete: () => {
-                this.reserveLoading = false;
-
-                this.cdr.detectChanges();
-            }
-        });
-    }
-
-    //get paginatedComments(): BookComment[] {
-    //    const start = this.currentCommentPage * this.commentsPerPage;
-    //    const end = start + this.commentsPerPage;
-    //    return this.comments.slice(start, end);
-    //}
-
-    get totalCommentPages(): number {
-        return Math.ceil(this.comments.length / this.commentsPerPage);
-    }
-
-    //get paginatedComments(): BookComment[] {
-    //    const start = this.currentCommentPage * this.commentsPerPage;
-    //    const end = start + this.commentsPerPage;
-    //    return this.comments.slice(start, end);
-    //}
   cancelEdit() {
     this.editingRatingId = null;
     this.editComment = '';
@@ -192,7 +180,7 @@ export class BookDetail implements OnInit {
 
   // Méthode onClick pour l'édition d'un commentaire
   confirmEdit(idRating: number) {
-    if(!idRating || !this.editComment.trim() || this.editRating === 0) return;
+    if (!idRating || !this.editComment.trim() || this.editRating === 0) return;
 
     const dto: CreateRatingDto = {
       note: this.editRating,
@@ -201,20 +189,20 @@ export class BookDetail implements OnInit {
 
     this.ratingService.updateRating(idRating, dto).subscribe({
       next: () => {
-      const rating = this.comments.find(r => r.idRating === idRating);
+        const rating = this.comments.find(r => r.idRating === idRating);
 
-      if(rating){
-        rating.note = dto.note;
-        rating.commentaire = dto.commentaire;
-        rating.moderation = false;
-      }
-      this.comments = this.comments.filter(r => r.idRating !== idRating);
+        if (rating) {
+          rating.note = dto.note;
+          rating.commentaire = dto.commentaire;
+          rating.moderation = false;
+        }
+        this.comments = this.comments.filter(r => r.idRating !== idRating);
 
-      this.cancelEdit();
-      this.popupService.show(
-        'Commentaire modifié avec succès, ce dernier est désormais en cours de modération',
-        'success'
-      );
+        this.cancelEdit();
+        this.popupService.show(
+          'Commentaire modifié avec succès, ce dernier est désormais en cours de modération',
+          'success'
+        );
       },
       error: () => {
         this.popupService.show(
