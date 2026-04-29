@@ -34,7 +34,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public LoanDto findLoanById(int id) {
         Loan loan = loanRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("The loan with the id " + id + " cannot be found."));
+                .orElseThrow(() -> new EntityNotFoundException("loan ", id ));
         return loanMapper.loanEntityToLoanDto(loan);
     }
 
@@ -44,7 +44,7 @@ public class LoanServiceImpl implements LoanService {
             throw new BookhubException("A book id is required to create a loan.");
         }
         if (!bookRepository.existsById(loanDto.idBook())) {
-            throw new EntityNotFoundException("The book with the id " + loanDto.idBook() + " cannot be found.");
+            throw new EntityNotFoundException("livre ", loanDto.idBook());
         }
 
         Loan loan = loanMapper.loanDtoToLoanEntity(loanDto);
@@ -80,7 +80,7 @@ public class LoanServiceImpl implements LoanService {
     @Transactional
     public LoanDto markAsReturned(Long idLoan) {
         Loan loan = loanRepository.findById(Math.toIntExact(idLoan))
-                .orElseThrow(() -> new EntityNotFoundException("L'emprunt avec l'id " + idLoan + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("L'emprunt", idLoan));
 
         if (!"ACTIVE".equals(loan.getStatut())) {
             throw new BookhubException("Seuls les emprunts ACTIVE peuvent être marqués comme retournés.");

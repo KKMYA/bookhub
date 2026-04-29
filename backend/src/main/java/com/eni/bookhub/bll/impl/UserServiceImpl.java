@@ -28,21 +28,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         Account user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'ID " + id + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("user", id));
         return userMapper.userEntityToUserDto(user);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
         Account user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'email " + email + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur", email));
         return userMapper.userEntityToUserDto(user);
     }
 
     @Override
     public UserDto updateUser(UserDto userDto) {
         Account user = userRepository.findById(userDto.id())
-                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'ID " + userDto.id() + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur", userDto.id()));
 
         user.setNom(userDto.nom());
         user.setPrenom(userDto.prenom());
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Account user = userRepository.findById(userDto.id())
-                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'ID " + userDto.id() + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur", userDto.id()));
 
         // Vérification email unique si changé
         if (!user.getEmail().equals(userDto.email()) && userRepository.findByEmail(userDto.email()).isPresent()) {
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(String email, PasswordUpdateRequest request) {
         Account user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'email " + email + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("L'utilisateur avec l'email ", email ));
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             throw new BookhubException("Ancien mot de passe incorrect.");
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("L'utilisateur avec l'ID " + id + " est introuvable.");
+            throw new EntityNotFoundException("L'utilisateur avec l'ID ", id );
         }
         userRepository.deleteById(id);
     }

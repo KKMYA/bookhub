@@ -63,7 +63,7 @@ public class BookServiceImpl implements BookService {
     @Override
         public BookDetailDto findBookById(int id, Long idAccount) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("The book with the id " + id + " cannot be found."));
+                .orElseThrow(() -> new EntityNotFoundException("livre ", id));
 
         BookDetailDto detailDto = bookMapper.bookEntityToBookDetailDto(book);
 
@@ -72,18 +72,7 @@ public class BookServiceImpl implements BookService {
             idAccount,
             ACTIVE_RESERVATION_STATUSES
         );
-
-        return new BookDetailDto(
-            detailDto.titre(),
-            detailDto.auteur(),
-            detailDto.noteMoyenne(),
-            detailDto.description(),
-            detailDto.couvertureUrl(),
-            detailDto.nbExemplairesDisponibles(),
-            detailDto.categoryLibelle(),
-            hasActiveReservation,
-                detailDto.isbn()
-        );
+        return bookMapper.bookEntityToBookDetailDto(book);
     }
 
     /**
@@ -101,7 +90,7 @@ public class BookServiceImpl implements BookService {
                     return categoryRepository.save(newCategory);
                 });
         if (bookRepository.existsByIsbn(bookDto.isbn())) {
-            throw new EntityAlreadyExistsException("Book with ISBN " + bookDto.isbn() + " already exist.");
+            throw new EntityAlreadyExistsException("le livre existe deja", bookDto.isbn());
         }
         try {
             Book book = bookMapper.bookDtoToBookEntity(bookDto);
@@ -113,12 +102,13 @@ public class BookServiceImpl implements BookService {
 
         }
     }
+
     @Override
     @Transactional
     public BookDto updateBook(BookDto bookDto) throws BookhubException {
         Book bookEntity;
         Book existingBook = bookRepository.findByIsbn(bookDto.isbn())
-                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN " + bookDto.isbn() + " n'existe pas."));
+                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'ISBN ", bookDto.isbn()));
         try {
             Book bookToUpdate = bookMapper.bookDtoToBookEntity(bookDto);
             bookToUpdate.setIdBook(existingBook.getIdBook());
@@ -128,7 +118,6 @@ public class BookServiceImpl implements BookService {
             System.out.println("Recovery error : " + e.getMessage());
             throw new BookhubException("Can't update this book");
         }
-
     }
 
     @Override

@@ -38,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationDto> getReservationsByAccount(Long idAccount) {
         if (!accountRepository.existsById(idAccount)) {
-            throw new EntityNotFoundException("Le compte avec l'id " + idAccount + " est introuvable.");
+            throw new EntityNotFoundException("Le compte", idAccount);
         }
 
         return reservationRepository.findByAccountIdAccountOrderByDateReservationDesc(idAccount)
@@ -59,17 +59,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto createReservation(Long idAccount, CreateReservationRequestDto request) {
         Book book = bookRepository.findById(request.idBook())
-                .orElseThrow(() -> new EntityNotFoundException("Le livre avec l'id " + request.idBook() + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("Le livre", request.idBook()));
 
         Account account = accountRepository.findById(idAccount)
-            .orElseThrow(() -> new EntityNotFoundException("Le compte avec l'id " + idAccount + " est introuvable."));
+            .orElseThrow(() -> new EntityNotFoundException("Le compte ", idAccount));
 
         if (reservationRepository.existsByBookIdBookAndAccountIdAccountAndStatutIn(
                 request.idBook(),
             idAccount,
                 ACTIVE_RESERVATION_STATUSES
         )) {
-            throw new EntityAlreadyExistsException("Une reservation active existe deja pour ce livre et ce compte.");
+            throw new EntityAlreadyExistsException("Une reservation", idAccount);
         }
 
         Reservation reservation = reservationMapper.createReservationRequestDtoToReservationEntity(request);
@@ -90,10 +90,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto cancelReservation(Long idAccount, Long idReservation) {
         Reservation reservation = reservationRepository.findById(idReservation)
-                .orElseThrow(() -> new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("La reservation", idReservation));
 
         if (!reservation.getAccount().getIdAccount().equals(idAccount)) {
-            throw new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable.");
+            throw new EntityNotFoundException("La reservation", idReservation);
         }
 
         if ("CANCELLED".equals(reservation.getStatut())) {
@@ -109,10 +109,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto validateReservation(Long idReservation) {
         Reservation reservation = reservationRepository.findById(idReservation)
-                .orElseThrow(() -> new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("La reservation", idReservation));
 
         if (!PENDING_STATUS.equals(reservation.getStatut())) {
-            throw new EntityAlreadyExistsException("La reservation a deja ete traitee.");
+            throw new EntityAlreadyExistsException("La reservation", idReservation);
         }
 
         LoanDto loanRequest = new LoanDto(
@@ -137,10 +137,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto completeReservation(Long idReservation) {
         Reservation reservation = reservationRepository.findById(idReservation)
-                .orElseThrow(() -> new EntityNotFoundException("La reservation avec l'id " + idReservation + " est introuvable."));
+                .orElseThrow(() -> new EntityNotFoundException("La reservation",idReservation));
 
         if (!AVAILABLE_STATUS.equals(reservation.getStatut())) {
-            throw new EntityAlreadyExistsException("Seules les reservations AVAILABLE peuvent etre completees.");
+            throw new EntityAlreadyExistsException("reservations",idReservation);
         }
 
         reservation.setStatut("COMPLETED");
@@ -151,7 +151,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto findReservationByBookAndStatus(Long idBook, String statut, Long idAccount) {
         Reservation reservation = reservationRepository.findByBookIdBookAndStatutAndAccountIdAccount(Math.toIntExact(idBook), statut, idAccount);
         if (reservation == null) {
-            throw new EntityNotFoundException("Aucune reservation trouvee pour ce livre et statut.");
+            throw new EntityNotFoundException("reservation", idBook);
         }
         return reservationMapper.reservationEntityToReservationDto(reservation);
     }}
