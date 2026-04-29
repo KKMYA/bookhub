@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Book } from '../../models/book.model';
-import { Observable, of } from 'rxjs';
+import { finalize, Observable, of } from 'rxjs';
 import { Button } from "../../ui/components/button/button";
 import { LucideAngularModule, Star } from 'lucide-angular';
 import { BookService } from '../../services/http/book/book.service';
