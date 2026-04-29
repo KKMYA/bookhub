@@ -47,11 +47,11 @@
 
            @if (loggedIn()) {
                 @if (authService.role=== 'LIBRARIAN' || authService.role === 'ADMIN') {
-                    <app-link href="/dashboard/librarian" (click)="closeMenu()" >
-                        Espace libraire
-                    </app-link>
                     <app-link href="/dashboard/librarian/reservations" (click)="closeMenu()" >
                         Réservations
+                    </app-link>
+                    <app-link href="/dashboard/librarian" (click)="closeMenu()" >
+                      Espace Libraire
                     </app-link>
                   }
                   @if (authService.role === 'ADMIN' ) {
