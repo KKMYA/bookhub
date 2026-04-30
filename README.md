@@ -76,7 +76,7 @@ L'application repose sur une **Architecture 3-Tiers** (Modèle-Vue-Contrôleur) 
 
 
 ## Auteurs
-[Mélanie ROY](https://www.linkedin.com/in/m%C3%A9lanie-roy/)
-[Agnès GUILLET](https://www.linkedin.com/in/agnesguillet/)
-[Alexis CALLET](https://www.linkedin.com/in/alexiscallet/)
-[Alexandre RENARD](https://www.linkedin.com/in/alexandre-renard-07b7b2317/)
+- [Mélanie ROY](https://www.linkedin.com/in/m%C3%A9lanie-roy/)
+- [Agnès GUILLET](https://www.linkedin.com/in/agnesguillet/)
+- [Alexis CALLET](https://www.linkedin.com/in/alexiscallet/)
+- [Alexandre RENARD](https://www.linkedin.com/in/alexandre-renard-07b7b2317/)
