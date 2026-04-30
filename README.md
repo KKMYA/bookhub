@@ -17,8 +17,6 @@ Ce projet a été conçu dans le cadre du cursus *Concepteur Développeur d'Appl
 | :---: | :---: |
 | ![Capture Accueil](https://via.placeholder.com/400x250?text=Aperçu+Accueil) | ![Capture Admin](https://via.placeholder.com/400x250?text=Aperçu+Admin) |
 
-> *Note : Remplacez les liens ci-dessus par vos captures d'écran réelles.*
-
 ---
 
 ## Fiche Technique
@@ -78,7 +76,7 @@ L'application repose sur une **Architecture 3-Tiers** (Modèle-Vue-Contrôleur) 
 
 
 ## Auteurs
-![Mélanie ROY](https://www.linkedin.com/in/m%C3%A9lanie-roy/)
-![Agnès GUILLET](https://www.linkedin.com/in/agnesguillet/)
-![Alexis CALLET](https://www.linkedin.com/in/alexiscallet/)
-![Alexandre RENARD](https://www.linkedin.com/in/alexandre-renard-07b7b2317/)
+[Mélanie ROY](https://www.linkedin.com/in/m%C3%A9lanie-roy/)
+[Agnès GUILLET](https://www.linkedin.com/in/agnesguillet/)
+[Alexis CALLET](https://www.linkedin.com/in/alexiscallet/)
+[Alexandre RENARD](https://www.linkedin.com/in/alexandre-renard-07b7b2317/)
