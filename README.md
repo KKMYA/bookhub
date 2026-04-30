@@ -11,7 +11,7 @@ Ce projet a été conçu dans le cadre du cursus *Concepteur Développeur d'Appl
 
 ---
 
-## Vitrine (Captures d'écran)
+## Vitrine
 
 | Accueil Utilisateur | Espace Libraire | Réservations |
 | :---: | :---: | :---: |
