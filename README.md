@@ -13,9 +13,9 @@ Ce projet a été conçu dans le cadre du cursus *Concepteur Développeur d'Appl
 
 ## Vitrine (Captures d'écran)
 
-| Accueil Utilisateur | Interface Administration |
-| :---: | :---: |
-| ![Capture Accueil](https://via.placeholder.com/400x250?text=Aperçu+Accueil) | ![Capture Admin](https://via.placeholder.com/400x250?text=Aperçu+Admin) |
+| Accueil Utilisateur | Espace Libraire | Réservations |
+| :---: | :---: | :---: |
+| ![Capture Accueil](Capture_Home_bookhub.png) | ![Capture Espace Libraire](Capture_Libraire_bookhome.PNG) | ![Réservations](Capture_Reservations_bookhome.PNG) |
 
 ---
 
