@@ -15,7 +15,7 @@ Ce projet a été conçu dans le cadre du cursus *Concepteur Développeur d'Appl
 
 | Accueil Utilisateur | Espace Libraire | Réservations |
 | :---: | :---: | :---: |
-| ![Capture Accueil](Capture_Home_bookhub.png) | ![Capture Espace Libraire](Capture_Libraire_bookhome.PNG) | ![Réservations](Capture_Reservations_bookhome.PNG) |
+| ![Capture Accueil](docs/images/Capture_Home_bookhub.png) | ![Capture Espace Libraire](docs/images/Capture_Libraire_bookhome.PNG) | ![Réservations](docs/images/Capture_Reservations_bookhome.PNG) |
 
 ---
 
