@@ -52,7 +52,7 @@ L'application repose sur une **Architecture 3-Tiers** (Modèle-Vue-Contrôleur) 
 
 1. **Clonage du projet**
    ```bash
-   git clone https://github.com/votre-compte/bookhub.git
+   git clone https://github.com/KKMYA/bookhub.git
    cd bookhub
 
 2. **Lancer le Backend (Spring Boot)**
