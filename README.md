@@ -69,10 +69,10 @@ L'application repose sur une **Architecture 3-Tiers** (Modèle-Vue-Contrôleur) 
 
 ## Guide d'Utilisation
 
-1. **Connexion : **Identifiez-vous pour accéder à votre espace personnel.
-2. **Consultation : **Parcourez le catalogue et consultez les avis des autres membres.
-3. **Réservation : **Réservez votre prochain livre en un clic.
-4. **Gestion : **Les libraires valident les emprunts et retours physiquement via leur tableau de bord dédié.
+1. **Connexion :** Identifiez-vous pour accéder à votre espace personnel.
+2. **Consultation :** Parcourez le catalogue et consultez les avis des autres membres.
+3. **Réservation :** Réservez votre prochain livre en un clic.
+4. **Gestion :** Les libraires valident les emprunts et retours physiquement via leur tableau de bord dédié.
 
 
 ## Auteurs
